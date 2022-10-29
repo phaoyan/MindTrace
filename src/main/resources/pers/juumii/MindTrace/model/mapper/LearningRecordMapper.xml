@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.juumii.MindTrace.model.mapper.LearningRecordMapper">
+
+    <resultMap id="resultMap" type="LearningRecord">
+        <id column="id" property="id"/>
+        <result column="description" property="desc"/>
+        <result column="completion" property="completion" />
+        <result column="time" property="time" />
+        <result column="task_id" property="taskId" />
+    </resultMap>
+    <insert id="insert">
+        insert into learning_record (id, description, completion, time, task_id)
+        values (#{data.id}, #{data.desc}, #{data.completion}, #{data.time}, #{data.taskId})
+    </insert>
+    <update id="update">
+        update learning_record set
+        description = #{data.desc},
+        completion = #{data.completion},
+        task_id = #{data.taskId}
+        where id = #{data.id}
+    </update>
+    <delete id="deleteById">
+        delete from learning_record where id = #{id}
+    </delete>
+    <select id="queryByTaskId" resultMap="resultMap">
+        select * from learning_record where task_id = #{taskId}
+    </select>
+    <select id="queryAll" resultMap="resultMap">
+        select * from learning_record
+    </select>
+    <select id="queryById" resultType="pers.juumii.MindTrace.model.data.LearningRecord">
+        select * from learning_record where id = #{id}
+    </select>
+</mapper>

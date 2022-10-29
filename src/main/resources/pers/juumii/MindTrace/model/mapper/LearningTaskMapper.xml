@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.juumii.MindTrace.model.mapper.LearningTaskMapper">
+
+    <resultMap id="resultMap" type="LearningTask">
+        <id column="id" property="id"/>
+        <result column="knowledge_id" property="knowledgeId"/>
+        <result column="description" property="desc"/>
+        <result column="super_task_id" property="superTaskId"/>
+    </resultMap>
+    
+    <insert id="insert">
+        insert into learning_task (knowledge_id, description, id, super_task_id)
+        values(#{data.knowledgeId}, #{data.desc}, #{data.id}, #{data.superTaskId})
+    </insert>
+    <update id="updateKnowledgeId">
+        update learning_task set knowledge_id = #{knowledgeId} where id = #{id}
+    </update>
+    <update id="update">
+        update learning_task set
+        knowledge_id = #{data.knowledgeId},
+        description = #{data.desc},
+        id = #{data.id},
+        super_task_id = #{data.superTaskId}
+        where id = #{data.id}
+    </update>
+    <delete id="deleteById">
+        delete from learning_task where id = #{id}
+    </delete>
+    <select id="queryByKnowledgeId" resultMap="resultMap">
+        select * from learning_task where knowledge_id = #{knowledgeId}
+    </select>
+    <select id="queryById" resultMap="resultMap">
+        select * from learning_task where id = #{id}
+    </select>
+    <select id="queryAll" resultMap="resultMap">
+        select * from learning_task
+    </select>
+    <select id="queryBySuperTaskId" resultType="pers.juumii.MindTrace.model.data.LearningTask">
+        select * from learning_task where super_task_id = #{superTaskId}
+    </select>
+</mapper>

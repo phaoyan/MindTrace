@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.juumii.MindTrace.model.mapper.QuizTaskMapper">
+
+    <resultMap id="resultMap" type="QuizTask">
+        <id column="id" property="id"/>
+        <result column="knowledge_id" property="knowledgeId"/>
+        <result column="description" property="desc"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into quiz_task (knowledge_id, id, description)
+        values(#{data.knowledgeId},#{data.id},#{data.desc})
+    </insert>
+
+    <update id="update">
+        update quiz_task set
+        knowledge_id = #{data.knowledgeId},
+        id = #{data.id},
+        description = #{data.desc}
+        where id = #{data.id}
+    </update>
+
+    <delete id="deleteById">
+        delete from quiz_task where id = #{id}
+    </delete>
+
+    <select id="queryByKnowledgeId" resultMap="resultMap">
+        select * from quiz_task where knowledge_id = #{knowledgeId}
+    </select>
+
+    <select id="queryById" resultMap="resultMap">
+        select * from quiz_task where id = #{id}
+    </select>
+
+    <select id="queryAll" resultMap="resultMap">
+        select * from quiz_task
+    </select>
+</mapper>

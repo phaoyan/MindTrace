@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.juumii.MindTrace.model.mapper.QuizCardMapper">
+
+    <resultMap id="resultMap" type="QuizCard">
+        <id column="id" property="id" />
+        <result column="quiz_id" property="quizId"/>
+        <result column="description" property="desc"/>
+        <result column="front" property="front"/>
+        <result column="back" property="back"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into quiz_card (id, quiz_id, description, front, back)
+        values (#{data.id}, #{data.quizId}, #{data.desc}, #{data.front}, #{data.back})
+    </insert>
+
+    <update id="update">
+        update quiz_card set
+        id = #{data.id}, quiz_id = #{data.quizId}, description = #{data.desc}, front = #{data.front}, back = #{data.back}
+        where  id = #{data.id}
+    </update>
+
+    <delete id="deleteById">
+        delete from quiz_card where id = #{id}
+    </delete>
+
+    <select id="queryById" resultMap="resultMap">
+        select * from quiz_card where id = #{id}
+    </select>
+
+    <select id="queryAll" resultMap="resultMap">
+        select * from quiz_card
+    </select>
+
+    <select id="queryByLike" resultMap="resultMap">
+        select * from quiz_card where description like #{keyword}
+    </select>
+
+    <select id="queryByQuizId" resultMap="resultMap">
+        select * from quiz_card where quiz_id = #{quizId}
+    </select>
+
+
+</mapper>
