@@ -36,4 +36,5 @@ public class Knowledge implements Persistent{
     public int getMasteryAvg() {
         return (masteryMax + masteryMin) / 2;
     }
+
 }

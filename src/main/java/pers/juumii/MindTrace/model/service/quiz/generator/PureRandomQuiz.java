@@ -1,10 +1,7 @@
 package pers.juumii.MindTrace.model.service.quiz.generator;
 
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.QuizCard;
-import pers.juumii.MindTrace.model.data.QuizTask;
 import pers.juumii.MindTrace.model.service.Repository;
 import pers.juumii.MindTrace.utils.MathUtils;
 

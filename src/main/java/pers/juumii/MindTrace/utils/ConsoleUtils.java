@@ -14,6 +14,10 @@ public class ConsoleUtils {
         return input(prompt).toLowerCase();
     }
 
+    public static <T> void printLocation(Class<T> cl, String info){
+        System.out.println(cl.getName() + ": " + info);
+    }
+
     public static void main(String[] args) {
         System.out.println(input("hello input"));
     }

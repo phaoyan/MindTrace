@@ -60,6 +60,14 @@ public class LinkingSearcher {
         return new ArrayList<>(DataUtils.getAllIf(repository.getByType(LearningTask.class), task -> task.getKnowledgeId() == knowledge.getId()));
     }
 
+    public List<LearningTask> getLearningTasks(int knowledgeId){
+        return new ArrayList<>(DataUtils.getAllIf(repository.getByType(LearningTask.class), task -> task.getKnowledgeId() ==knowledgeId));
+    }
+
+    public List<Content> getLearningContents(LearningTask learningTask){
+        return new ArrayList<>(DataUtils.getAllIf(repository.getByType(Content.class), content -> content.getTaskId() == learningTask.getId()));
+    }
+
     public List<LearningTask> getLearningTaskChain(LearningTask task){
         List<LearningTask> res = new ArrayList<>();
         if(task.getSuperTaskId() != 0)
@@ -81,6 +89,10 @@ public class LinkingSearcher {
 
     public List<QuizTask> getQuizTasks(Knowledge knowledge){
         return new ArrayList<>(DataUtils.getAllIf(repository.getByType(QuizTask.class), task -> task.getKnowledgeId() == knowledge.getId()));
+    }
+
+    public List<QuizCard> getQuizCards(QuizTask quizTask){
+        return new ArrayList<>(DataUtils.getAllIf(repository.getByType(QuizCard.class), quizCard -> quizCard.getQuizId() == quizTask.getId()));
     }
 
     //返回属于同一个knowledge的quizTasks
