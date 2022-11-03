@@ -2,14 +2,10 @@ package pers.juumii.MindTrace.view.console;
 
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.*;
 import pers.juumii.MindTrace.model.service.GeneralStatistics;
 import pers.juumii.MindTrace.model.service.Repository;
-import pers.juumii.MindTrace.utils.ConsoleUtils;
-import pers.juumii.MindTrace.utils.Constants;
-import pers.juumii.MindTrace.utils.DataUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.List;

@@ -3,6 +3,7 @@ package pers.juumii.MindTrace.model.service;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.data.*;
 import pers.juumii.MindTrace.utils.DataUtils;
 
@@ -21,8 +22,15 @@ public class LinkingSearcher {
 
     public List<Knowledge> getKnowledgeChain(Knowledge knowledge){
         List<Knowledge> res = new ArrayList<>();
-        if(knowledge.getSuperKnowledgeId() != 0)
-            res.addAll(getKnowledgeChain(repository.getById(knowledge.getSuperKnowledgeId(), Knowledge.class)));
+        if(knowledge.isClear())
+            return res;
+        if(knowledge.getSuperKnowledgeId() != 0) {
+            try {
+                res.addAll(getKnowledgeChain(repository.getById(knowledge.getSuperKnowledgeId(), Knowledge.class)));
+            } catch (DataClearedException ignored) {
+                //之前已经进行过判断
+            }
+        }
         res.add(knowledge);
         return res;
     }
@@ -34,7 +42,13 @@ public class LinkingSearcher {
     public List<Knowledge> getKnowledgesAside(Knowledge knowledge){
         if(knowledge.getSuperKnowledgeId() == 0)
             return List.of(knowledge);
-        Knowledge superKnowledge = repository.getById(knowledge.getSuperKnowledgeId(), Knowledge.class);
+        Knowledge superKnowledge = null;
+        try {
+            superKnowledge = repository.getById(knowledge.getSuperKnowledgeId(), Knowledge.class);
+        } catch (DataClearedException e) {
+            //如果该knowledge已经被clear，则直接返回空的数组即可
+            return new ArrayList<>();
+        }
         return getSubKnowledges(superKnowledge);
     }
 
@@ -70,8 +84,14 @@ public class LinkingSearcher {
 
     public List<LearningTask> getLearningTaskChain(LearningTask task){
         List<LearningTask> res = new ArrayList<>();
-        if(task.getSuperTaskId() != 0)
-            res.addAll(getLearningTaskChain(repository.getById(task.getSuperTaskId(), LearningTask.class)));
+        if(task.getSuperTaskId() != 0) {
+            try {
+                res.addAll(getLearningTaskChain(repository.getById(task.getSuperTaskId(), LearningTask.class)));
+            } catch (DataClearedException e) {
+                //如果该learningTask已经被clear，则直接返回空数组即可
+                return res;
+            }
+        }
         res.add(task);
         return res;
     }
@@ -97,20 +117,35 @@ public class LinkingSearcher {
 
     //返回属于同一个knowledge的quizTasks
     public List<QuizTask> getQuizTasksAside(QuizTask quizTask){
-        return getQuizTasks(repository.getById(quizTask.getKnowledgeId(), Knowledge.class));
+        try {
+            return getQuizTasks(repository.getById(quizTask.getKnowledgeId(), Knowledge.class));
+        } catch (DataClearedException e) {
+            //如果该quizTask已经被clear，则它的aside就是空的数组，直接返回空的数组即可
+            return new ArrayList<>();
+        }
     }
 
     //返回属于同级knowledge的quizTasks
     public List<QuizTask> getAllQuizTasksAside(QuizTask quizTask){
         List<QuizTask> res = new ArrayList<>();
-        getKnowledgesAside(repository.getById(quizTask.getKnowledgeId(),Knowledge.class)).forEach(knowledge -> res.addAll(getQuizTasks(knowledge)));
+        try {
+            getKnowledgesAside(repository.getById(quizTask.getKnowledgeId(),Knowledge.class)).forEach(knowledge -> res.addAll(getQuizTasks(knowledge)));
+        } catch (DataClearedException e) {
+            //如果该quizTask已经被clear，则它的aside就是空的数组，直接返回空的数组即可
+            return new ArrayList<>();
+        }
         return res;
     }
 
     //返回属于同一个knowledge及其subKnoledges的quizTasks
     public List<QuizTask> getQuizTasksBeneath(QuizTask quizTask){
         List<QuizTask> res = new ArrayList<>();
-        getAllKnowledgesBeneath(repository.getById(quizTask.getKnowledgeId(), Knowledge.class)).forEach(knowledge -> res.addAll(getQuizTasks(knowledge)));
+        try {
+            getAllKnowledgesBeneath(repository.getById(quizTask.getKnowledgeId(), Knowledge.class)).forEach(knowledge -> res.addAll(getQuizTasks(knowledge)));
+        } catch (DataClearedException e) {
+            //如果该quizTask已经被clear，则它的beneath就是空的数组，直接返回空的数组即可
+            return new ArrayList<>();
+        }
         return res;
     }
 

@@ -23,6 +23,7 @@ public class KTree {
 
     public void refresh() {
         root = new XNode<>();
+        root.setData(new Knowledge(0, -1, "ROOT", 0,0));
         List<Knowledge> knowledges = repository.getByType(Knowledge.class);
         List<XNode<Knowledge>> kNodes = new ArrayList<>();
         knowledges.forEach(knowledge -> kNodes.add(new XNode<>(knowledge)));

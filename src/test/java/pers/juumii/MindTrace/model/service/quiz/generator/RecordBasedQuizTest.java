@@ -3,6 +3,7 @@ package pers.juumii.MindTrace.model.service.quiz.generator;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import pers.juumii.MindTrace.SpringConfig;
+import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.data.Knowledge;
 import pers.juumii.MindTrace.model.data.QuizCard;
 import pers.juumii.MindTrace.model.data.QuizTask;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RecordBasedQuizTest {
 
     @Test
-    void analyze() {
+    void analyze() throws DataClearedException {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
         Repository repository = ctx.getBean(Repository.class);
         List<QuizCard> quizCards = ctx.getBean(RecordBasedQuiz.class).analyze(100);

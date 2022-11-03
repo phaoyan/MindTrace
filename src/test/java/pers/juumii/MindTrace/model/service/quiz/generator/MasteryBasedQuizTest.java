@@ -6,6 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 import pers.juumii.MindTrace.MindTraceApplication;
 import pers.juumii.MindTrace.SpringConfig;
+import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.data.Knowledge;
 import pers.juumii.MindTrace.model.data.QuizCard;
 import pers.juumii.MindTrace.model.data.QuizTask;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MasteryBasedQuizTest {
 
     @Test
-    void analyze() {
+    void analyze() throws DataClearedException {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
         Repository repository = ctx.getBean(Repository.class);
         List<QuizCard> quizCards = ctx.getBean(MasteryBasedQuiz.class).analyze(100);

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.service.Repository;
 
 @Data
@@ -17,7 +18,12 @@ public class QuizTask implements Persistent{
     private String desc;
 
     public Knowledge getKnowledge(Repository repo){
-        return repo.getById(knowledgeId, Knowledge.class);
+        try {
+            return repo.getById(knowledgeId, Knowledge.class);
+        } catch (DataClearedException e) {
+            //如果该quizTask对应的knowledge已经被clear，则返回空即可
+            return null;
+        }
     }
 
     public boolean isLike(String keyword) {

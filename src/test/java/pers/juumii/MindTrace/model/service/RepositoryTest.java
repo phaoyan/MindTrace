@@ -2,8 +2,8 @@ package pers.juumii.MindTrace.model.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import pers.juumii.MindTrace.SpringConfig;
+import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.data.*;
 import pers.juumii.MindTrace.utils.MathUtils;
 
@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryTest {
 
@@ -128,7 +126,7 @@ class RepositoryTest {
     }
 
     @Test
-    void update(){
+    void update() throws DataClearedException {
         repo.load();
         Knowledge knowledge = repo.getById(66, Knowledge.class);
         repo.commit();
@@ -146,7 +144,7 @@ class RepositoryTest {
     }
 
     @Test
-    void remove(){
+    void remove() throws DataClearedException {
         repo.load();
         repo.removeById(1, Content.class);
         repo.commit();

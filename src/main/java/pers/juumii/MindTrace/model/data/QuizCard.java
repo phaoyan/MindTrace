@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.service.Repository;
 
 @Data
@@ -16,7 +17,12 @@ public class QuizCard implements Persistent{
     private String front, back;
 
     public QuizTask getQuizTask(Repository repo){
-        return repo.getById(quizId, QuizTask.class);
+        try {
+            return repo.getById(quizId, QuizTask.class);
+        } catch (DataClearedException e) {
+            //如果该quizTask已经被clear，则返回空即可
+            return null;
+        }
     }
 
 

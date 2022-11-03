@@ -18,6 +18,10 @@ public class ConsoleUtils {
         System.out.println(cl.getName() + ": " + info);
     }
 
+    public static <T> void printLocation(String loc, String info){
+        System.out.println(loc + ": " + info);
+    }
+
     public static void main(String[] args) {
         System.out.println(input("hello input"));
     }
