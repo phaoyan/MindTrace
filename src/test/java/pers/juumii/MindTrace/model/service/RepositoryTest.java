@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import pers.juumii.MindTrace.SpringConfig;
 import pers.juumii.MindTrace.model.data.*;
+import pers.juumii.MindTrace.utils.JsonUtils;
 import pers.juumii.MindTrace.utils.MathUtils;
 
 import java.time.Duration;
@@ -94,7 +95,7 @@ class RepositoryTest {
     @Test
     void load() {
         repo.load();
-        System.out.println(repo);
+        System.out.println(JsonUtils.toJson(repo.getById(2, Knowledge.class)));
     }
 
     @Test
@@ -118,5 +119,12 @@ class RepositoryTest {
     void remove(){
         repo.load();
         repo.commit();
+    }
+
+    @Test
+    void deserialize(){
+        repo.load();
+        Knowledge knowledge = repo.getById(2, Knowledge.class);
+        System.out.println(JsonUtils.readJson(JsonUtils.toJson(knowledge), Knowledge.class));
     }
 }

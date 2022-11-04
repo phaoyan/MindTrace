@@ -118,7 +118,7 @@ const pageSelected = ref("learningCards")
     margin: auto 0;
 }
 .main-scroll{
-    height: 40vh !important;
+    height: 45vh !important;
 }
 .add-task-card{
     margin: 0 auto;

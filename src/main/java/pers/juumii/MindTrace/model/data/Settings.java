@@ -8,7 +8,6 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class Settings implements Persistent{
     private int id;
     private String k, v;

@@ -3,10 +3,7 @@ package pers.juumii.MindTrace.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pers.juumii.MindTrace.model.data.Knowledge;
 import pers.juumii.MindTrace.model.data.LearningCard;
 import pers.juumii.MindTrace.model.service.LinkingSearcher;
@@ -34,7 +31,7 @@ public class DataController {
 
     @GetMapping("/knowledge/getRoot")
     public String getKnowledgeRoot(){
-        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.getKnowledgeRoot", kTree.getRoot().toString());
+        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.getKnowledgeRoot", kTree.getRoot().getData().getDescription());
         return JsonUtils.toJson(kTree.getRoot());
     }
 
@@ -57,8 +54,8 @@ public class DataController {
         return JsonUtils.toJson(kTree);
     }
 
-    @GetMapping("/knowledge/update")
-    public String updateKnowledge(@RequestParam String knowledge){
+    @PostMapping("/knowledge/update")
+    public String updateKnowledge(@RequestBody String knowledge){
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateKnowledge", knowledge);
         JsonObject json = new Gson().fromJson(knowledge, JsonObject.class);
         int id = json.get("id").getAsInt();
@@ -119,6 +116,5 @@ public class DataController {
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.removeLearningCard", "id="+id);
         repository.remove(repository.getById(id, LearningCard.class));
         return "Learning card removed.";
-
     }
 }

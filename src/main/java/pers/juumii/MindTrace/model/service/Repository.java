@@ -67,6 +67,7 @@ public class Repository {
         dataRepository = new ArrayList<>();
         for(DataMapper mapper: mappers.values())
             dataRepository.addAll(mapper.queryAll());
+        DataUtils.forAllIf(dataRepository, data->data instanceof Linkable, data->((Linkable) data).link(this));
     }
 
     //get方法。由于repository中可能存有已经clear但没有体现在数据库中的数据，所以get原则上都要除去clear的数据

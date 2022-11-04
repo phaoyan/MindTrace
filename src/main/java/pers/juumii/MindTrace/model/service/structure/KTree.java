@@ -23,10 +23,16 @@ public class KTree {
 
     public void refresh() {
         root = new XNode<>();
-        root.setData(new Knowledge(0, -1, 0, 0,"ROOT"));
+        Knowledge knowledge = new Knowledge();
+        knowledge.setId(0);
+        knowledge.setSuperKnowledgeId(-1);
+        knowledge.setMasteryMin(0);
+        knowledge.setMasteryMax(0);
+        knowledge.setDescription("ROOT");
+        root.setData(knowledge);
         List<Knowledge> knowledges = repository.getByType(Knowledge.class);
         List<XNode<Knowledge>> kNodes = new ArrayList<>();
-        knowledges.forEach(knowledge -> kNodes.add(new XNode<>(knowledge)));
+        knowledges.forEach(klg -> kNodes.add(new XNode<>(klg)));
         kNodes.forEach(xNode -> link(xNode, kNodes));
     }
 

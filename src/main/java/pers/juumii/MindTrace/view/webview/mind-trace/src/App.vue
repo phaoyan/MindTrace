@@ -28,7 +28,6 @@ const getKTree = async ()=>{
 const getKnowledgeById = async (id)=>{
   let knowledge
   await axios.get("http://localhost:9090/knowledge/getKnowledgeById?id="+id).then(e=>knowledge = e.data)
-  await getLearningTasksByKnowledgeId(id).then(e=>knowledge["learningCards"]=e)
   console.log("get knowledge by id:")
   console.log(knowledge)
   return knowledge
@@ -50,24 +49,15 @@ const removeKnowledgeById = async (id)=>{
   })
 }
 const updateKnowledge = async (knowldege)=>{
-  await axios.get("http://localhost:9090/knowledge/update",{params:{knowledge:JSON.stringify(knowldege)}}).then(e=>{
-    console.log("update desc success: ")
-    console.log(e.data)
+  console.log("update knowledge")
+  console.log(knowldege)
+  await axios({
+    method:"post",
+    url:"http://localhost:9090/knowledge/update",
+    data:knowldege
   })
 }
-const getLearningTasksByKnowledgeId = async (id)=>{
-  //Òì³£ÅÐ¶Ï
-  if(id == undefined)
-    return
 
-  let learningTasks
-  await axios.get("http://localhost:9090/knowledge/getLearningCards?id="+id).then(e=>{
-    learningTasks = e.data
-    console.log("get learning cards success: ")
-    console.log(learningTasks)
-  })
-  return learningTasks
-}
 const addLearningTask = async (knowledge)=>{
   if(knowledge.id == undefined)
     return
@@ -101,7 +91,6 @@ const request = {
     addKnowledgeBySuperId: addKnowledgeBySuperId,
     removeKnowledgeById: removeKnowledgeById,
     updateKnowledge: updateKnowledge,
-    getLearningTasksByKnowledgeId: getLearningTasksByKnowledgeId,
     addLearningTask: addLearningTask,
     updateLearningTask: updateLearningTask,
     removeLearningTask: removeLearningTask
@@ -112,15 +101,7 @@ const updateSelectedIndexes = async (newSelected)=>{
   await request.getKnowledgeById(selectedIndexes.value[selectedIndexes.value.length-1]).then(e => selectedKnowledge.value = e)
 }
 const updateSelectedKnowledge = async()=>{
-  let toBeSubmitted = {
-    description:selectedKnowledge.value.description,
-    id: selectedKnowledge.value.id,
-    masteryAvg: selectedKnowledge.value.masteryAvg,
-    masteryMax: selectedKnowledge.value.masteryMax,
-    masteryMin: selectedKnowledge.value.masteryMin,
-    superKnowledgeId: selectedKnowledge.value.superKnowledgeId
-  }
-  await request.updateKnowledge(toBeSubmitted)
+  await request.updateKnowledge(selectedKnowledge.value)
   await request.getKTree().then(e=>kTree.value = e)
 }
 const addSubKnowledge = async ()=>{

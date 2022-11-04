@@ -13,11 +13,6 @@ class SettingsMapperTest {
     }
 
     @Test
-    void update() {
-        mapper.update(new Settings(1, "knowledge_level_line","lowest"));
-    }
-
-    @Test
     void deleteById() {
     }
 
