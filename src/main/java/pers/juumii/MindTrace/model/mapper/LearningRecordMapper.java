@@ -7,6 +7,5 @@ import pers.juumii.MindTrace.model.mapper.utils.DataMapper;
 import java.util.List;
 
 public interface LearningRecordMapper  extends DataMapper<LearningRecord> {
-
     List<LearningRecord> queryByTaskId(@Param("taskId") int taskId);
 }

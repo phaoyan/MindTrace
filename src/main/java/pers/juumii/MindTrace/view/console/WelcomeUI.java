@@ -22,8 +22,8 @@ public class WelcomeUI {
     @PostConstruct
     public void init(){
         knowledgeCount = repository.getByType(Knowledge.class).size();
-        learningTaskCount = repository.getByType(LearningTask.class).size();
-        quizTaskCount = repository.getByType(QuizTask.class).size();
+        learningTaskCount = repository.getByType(LearningCard.class).size();
+        quizTaskCount = repository.getByType(QuizCard.class).size();
 
     }
     public void welcome(){
@@ -32,12 +32,12 @@ public class WelcomeUI {
             Knowledge / Learning Tasks / Quiz Tasks Recorded: %s / %s / %s
             """,
             GeneralStatistics.getItemCount(Knowledge.class),
-            GeneralStatistics.getItemCount(LearningTask.class),
-            GeneralStatistics.getItemCount(QuizTask.class));
+            GeneralStatistics.getItemCount(LearningCard.class),
+            GeneralStatistics.getItemCount(QuizCard.class));
         List<Knowledge> urges = GeneralStatistics.getKnowledgesBelowLevelLine();
         if(urges.size() != 0){
             System.out.println(urges.size() + " Knowledges have Mastery level: LOWER, and it might be an urge to review:");
-            urges.forEach(urge -> System.out.println(">>> "+urge.getDesc() + "[" + urge.getMasteryAvg() + "]"));
+            urges.forEach(urge -> System.out.println(">>> "+urge.getDescription() + "[" + urge.getMasteryAvg() + "]"));
             System.out.println("enter  query <knowledge title>  to review");
         }
     }

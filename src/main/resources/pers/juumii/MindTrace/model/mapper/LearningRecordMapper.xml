@@ -4,34 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pers.juumii.MindTrace.model.mapper.LearningRecordMapper">
 
-    <resultMap id="resultMap" type="LearningRecord">
-        <id column="id" property="id"/>
-        <result column="description" property="desc"/>
-        <result column="completion" property="completion" />
-        <result column="time" property="time" />
-        <result column="task_id" property="taskId" />
-    </resultMap>
     <insert id="insert">
-        insert into learning_record (id, description, completion, time, task_id)
-        values (#{data.id}, #{data.desc}, #{data.completion}, #{data.time}, #{data.taskId})
+        insert into learning_record (id, description, completion, time, card_id)
+        values (#{data.id}, #{data.description}, #{data.completion}, #{data.time}, #{data.cardId})
     </insert>
     <update id="update">
         update learning_record set
-        description = #{data.desc},
+        description = #{data.description},
         completion = #{data.completion},
-        task_id = #{data.taskId}
+        card_id = #{data.cardId},
+        time = #{data.time}
         where id = #{data.id}
     </update>
     <delete id="deleteById">
         delete from learning_record where id = #{id}
     </delete>
-    <select id="queryByTaskId" resultMap="resultMap">
-        select * from learning_record where task_id = #{taskId}
+    <select id="queryByTaskId" resultType="learningRecord">
+        select * from learning_record where card_id = #{cardId}
     </select>
-    <select id="queryAll" resultMap="resultMap">
+    <select id="queryAll" resultType="learningRecord">
         select * from learning_record
     </select>
-    <select id="queryById" resultType="pers.juumii.MindTrace.model.data.LearningRecord">
+    <select id="queryById" resultType="learningRecord">
         select * from learning_record where id = #{id}
     </select>
 </mapper>

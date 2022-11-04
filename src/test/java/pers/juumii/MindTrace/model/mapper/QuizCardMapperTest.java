@@ -1,27 +1,27 @@
 package pers.juumii.MindTrace.model.mapper;
 
 import org.junit.jupiter.api.Test;
+import pers.juumii.MindTrace.model.data.QuizCard;
 import pers.juumii.MindTrace.model.data.QuizRecord;
-import pers.juumii.MindTrace.model.data.QuizTask;
 import pers.juumii.MindTrace.utils.SqlSessionUtils;
 
 import java.time.LocalDateTime;
 
-class QuizTaskMapperTest {
+class QuizCardMapperTest {
 
-    public static final QuizTaskMapper mapper = SqlSessionUtils.getSqlSession().getMapper(QuizTaskMapper.class);
+    public static final QuizCardMapper mapper = SqlSessionUtils.getSqlSession().getMapper(QuizCardMapper.class);
     @Test
     void insertQuizTask() {
-        QuizTask quizTask = new QuizTask();
-        quizTask.setId(10086);
-        quizTask.setKnowledgeId(777);
+        QuizCard quizCard = new QuizCard();
+        quizCard.setId(10086);
+        quizCard.setKnowledgeId(777);
         QuizRecordMapper quizRecordMapper = SqlSessionUtils.getSqlSession().getMapper(QuizRecordMapper.class);
         QuizRecord quizRecord = new QuizRecord();
         quizRecord.setTime(LocalDateTime.now());
-        quizRecord.setTaskId(quizTask.getId());
-        quizRecord.setDesc("quiz record...");
+        quizRecord.setCardId(quizCard.getId());
+        quizRecord.setDescription("quiz record...");
         quizRecordMapper.insert(quizRecord);
-        mapper.insert(quizTask);
+        mapper.insert(quizCard);
     }
 
     @Test

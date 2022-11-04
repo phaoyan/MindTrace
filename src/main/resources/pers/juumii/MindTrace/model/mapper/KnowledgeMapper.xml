@@ -4,21 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="pers.juumii.MindTrace.model.mapper.KnowledgeMapper">
 
-    <resultMap id="resultMap" type="Knowledge">
-        <id column="id" property="id"/>
-        <result column="description" property="desc"/>
-        <result column="mastery_max" property="masteryMax"/>
-        <result column="mastery_min" property="masteryMin"/>
-        <result column="super_knowledge_id" property="superKnowledgeId"/>
-    </resultMap>
-
     <insert id="insert">
         insert into knowledge (id, description, super_knowledge_id, mastery_max, mastery_min)
-        values(#{data.id}, #{data.desc}, #{data.superKnowledgeId}, #{data.masteryMax}, #{data.masteryMin});
+        values(#{data.id}, #{data.description}, #{data.superKnowledgeId}, #{data.masteryMax}, #{data.masteryMin});
     </insert>
     <update id="update">
         update knowledge set
-        description = #{data.desc},
+        description = #{data.description},
         super_knowledge_id = #{data.superKnowledgeId},
         mastery_min = #{data.masteryMin},
         mastery_max = #{data.masteryMax},
@@ -28,13 +20,13 @@
     <delete id="deleteById">
         delete from knowledge where id = #{id}
     </delete>
-    <select id="queryById" resultMap="resultMap">
+    <select id="queryById" resultType="knowledge">
         select * from knowledge where id = #{id}
     </select>
-    <select id="queryAll" resultMap="resultMap">
+    <select id="queryAll" resultType="knowledge">
         select * from knowledge
     </select>
-    <select id="queryBySuperKnowledgeId" resultType="pers.juumii.MindTrace.model.data.Knowledge">
+    <select id="queryBySuperKnowledgeId" resultType="knowledge">
         select * from knowledge where super_knowledge_id = #{superKnowledgeId}
     </select>
 </mapper>

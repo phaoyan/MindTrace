@@ -1,18 +1,15 @@
 package pers.juumii.MindTrace.model.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuizCard implements Persistent{
+@ToString
+public class LearningCard implements Persistent{
 
     private int id, knowledgeId;
-    private String description, front, back;
+    private String description, resource;
 
     public boolean isLike(String keyword) {
         return description.contains(keyword);

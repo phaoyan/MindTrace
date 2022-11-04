@@ -6,7 +6,7 @@ import pers.juumii.MindTrace.model.mapper.utils.DataMapper;
 
 import java.util.List;
 
+public interface QuizCardMapper extends DataMapper<QuizCard> {
 
-public interface QuizCardMapper extends DataMapper<QuizCard>{
-    List<QuizCard> queryByQuizId(@Param("quizId") int quizId);
+    List<QuizCard> queryByKnowledgeId(@Param("knowledgeId") int knowledgeId);
 }

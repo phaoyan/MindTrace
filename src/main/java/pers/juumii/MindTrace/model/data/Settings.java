@@ -17,18 +17,6 @@ public class Settings implements Persistent{
     public int getId() {
         return id;
     }
-
-    @Override
-    public void clear() {
-        k = null;
-        v = null;
-    }
-
-    @Override
-    public boolean isClear() {
-        return k == null && v == null;
-    }
-
     @Override
     public boolean isLike(String keyword) {
         return k.contains(keyword);

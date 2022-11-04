@@ -11,27 +11,13 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Knowledge implements Persistent{
 
-    private int id;
-    private int superKnowledgeId;
-    private String desc;
-    private int masteryMin;
-    private int masteryMax;
+    private int id, superKnowledgeId;
+    private int masteryMin, masteryMax;
+    private String description;
 
     public boolean isLike(String keyword) {
-        return desc.contains(keyword);
+        return description.contains(keyword);
     }
-
-    public void clear(){
-        desc = null;
-        masteryMin = 0;
-        masteryMax = 0;
-        superKnowledgeId = 0;
-    }
-
-    public boolean isClear(){
-        return desc == null && masteryMin == 0 && masteryMax == 0 && superKnowledgeId == 0;
-    }
-
 
     public int getMasteryAvg() {
         return (masteryMax + masteryMin) / 2;

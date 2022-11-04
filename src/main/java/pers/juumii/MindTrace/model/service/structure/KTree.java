@@ -23,7 +23,7 @@ public class KTree {
 
     public void refresh() {
         root = new XNode<>();
-        root.setData(new Knowledge(0, -1, "ROOT", 0,0));
+        root.setData(new Knowledge(0, -1, 0, 0,"ROOT"));
         List<Knowledge> knowledges = repository.getByType(Knowledge.class);
         List<XNode<Knowledge>> kNodes = new ArrayList<>();
         knowledges.forEach(knowledge -> kNodes.add(new XNode<>(knowledge)));
@@ -51,9 +51,9 @@ public class KTree {
     private XNode<String> getDescTreeRoot(XNode<Knowledge> root){
         XNode<String> res = new XNode<>();
         if(root.getData() != null)
-            res.setData(root.getData().getDesc());
+            res.setData(root.getData().getDescription());
         for(XNode<Knowledge> kNode: root.getSubKNodes()){
-            XNode<String> subNode = new XNode<>(kNode.getData().getDesc(), getDescTreeRoot(kNode).getSubKNodes());
+            XNode<String> subNode = new XNode<>(kNode.getData().getDescription(), getDescTreeRoot(kNode).getSubKNodes());
             res.addSubKNode(subNode);
         }
         return res;

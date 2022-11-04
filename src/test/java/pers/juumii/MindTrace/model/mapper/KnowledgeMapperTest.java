@@ -1,23 +1,23 @@
 package pers.juumii.MindTrace.model.mapper;
 
 import org.junit.jupiter.api.Test;
-import pers.juumii.MindTrace.model.data.Content;
 import pers.juumii.MindTrace.model.data.Knowledge;
-import pers.juumii.MindTrace.model.data.LearningTask;
-import pers.juumii.MindTrace.model.data.Level;
 import pers.juumii.MindTrace.utils.SqlSessionUtils;
-
-import java.util.ArrayList;
 
 class KnowledgeMapperTest {
 
     public static final KnowledgeMapper knowledgeMapper = SqlSessionUtils.getSqlSession().getMapper(KnowledgeMapper.class);
-    public static final LearningTaskMapper learningTaskMapper = SqlSessionUtils.getSqlSession().getMapper(LearningTaskMapper.class);
-    public static final ContentMapper contentMapper = SqlSessionUtils.getSqlSession().getMapper(ContentMapper.class);
+    public static final LearningCardMapper LEARNING_CARD_MAPPER = SqlSessionUtils.getSqlSession().getMapper(LearningCardMapper.class);
 
     @Test
     void insertKnowledge() {
-
+        Knowledge data = new Knowledge();
+        data.setId(1);
+        data.setSuperKnowledgeId(5);
+        data.setMasteryMin(10);
+        data.setMasteryMax(100);
+        data.setDescription("test knowldege");
+        knowledgeMapper.insert(data);
     }
 
     @Test
@@ -31,8 +31,8 @@ class KnowledgeMapperTest {
 
     @Test
     void update(){
-        Knowledge knowledge = knowledgeMapper.queryById(66);
-        knowledge.setDesc("test update");
+        Knowledge knowledge = knowledgeMapper.queryById(1);
+        knowledge.setDescription("test update");
         knowledgeMapper.update(knowledge);
     }
 

@@ -1,11 +1,9 @@
 package pers.juumii.MindTrace.model.mapper;
 
 import org.junit.jupiter.api.Test;
-import pers.juumii.MindTrace.model.data.Level;
 import pers.juumii.MindTrace.model.data.QuizRecord;
 import pers.juumii.MindTrace.utils.SqlSessionUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 class QuizRecordMapperTest {
@@ -34,7 +32,7 @@ class QuizRecordMapperTest {
     @Test
     void update(){
         QuizRecord quizRecord = mapper.queryById(1);
-        quizRecord.setDesc("test update record");
+        quizRecord.setDescription("test update record");
         mapper.update(quizRecord);
     }
 }

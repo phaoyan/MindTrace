@@ -2,15 +2,13 @@ package pers.juumii.MindTrace.controller;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.data.Knowledge;
-import pers.juumii.MindTrace.model.data.LearningTask;
+import pers.juumii.MindTrace.model.data.LearningCard;
 import pers.juumii.MindTrace.model.service.LinkingSearcher;
 import pers.juumii.MindTrace.model.service.Repository;
 import pers.juumii.MindTrace.model.service.structure.KTree;
@@ -41,7 +39,7 @@ public class DataController {
     }
 
     @GetMapping("/knowledge/getKnowledgeById")
-    public String getKnowledgeById(int id) throws DataClearedException {
+    public String getKnowledgeById(int id){
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.getKnowledgeById", "id="+id);
         Knowledge knowledge = id == 0 ? kTree.getRoot().getData() : repository.getById(id, Knowledge.class);
         return JsonUtils.toJson(knowledge);
@@ -54,87 +52,73 @@ public class DataController {
         Knowledge knowledge = repository.create(Knowledge.class);
         knowledge.setId(repository.getByType(Knowledge.class).size()+1);
         knowledge.setSuperKnowledgeId(superId);
-        knowledge.setDesc("empty...");
+        knowledge.setDescription("empty...");
         kTree.refresh();
         return JsonUtils.toJson(kTree);
     }
 
     @GetMapping("/knowledge/update")
-    public String updateKnowledge(@RequestParam String knowledge) throws DataClearedException {
+    public String updateKnowledge(@RequestParam String knowledge){
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateKnowledge", knowledge);
         JsonObject json = new Gson().fromJson(knowledge, JsonObject.class);
         int id = json.get("id").getAsInt();
-        String desc = json.get("desc").getAsString();
+        String desc = json.get("description").getAsString();
         int superKnowledgeId = json.get("superKnowledgeId").getAsInt();
 
         Knowledge selected = repository.getById(id, Knowledge.class);
-        selected.setDesc(desc);
+        selected.setDescription(desc);
         selected.setSuperKnowledgeId(superKnowledgeId);
         kTree.refresh();
         return JsonUtils.toJson(selected);
     }
 
     @GetMapping("knowledge/remove")
-    public String removeKnowledge(int id) throws DataClearedException {
+    public String removeKnowledge(int id){
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.removeKnowledge", "id="+id);
-        searcher.getAllKnowledgesBeneath(repository.getById(id, Knowledge.class)).forEach(repository::remove);
+        searcher.getKnowledgesBeneath(repository.getById(id, Knowledge.class)).forEach(repository::remove);
         kTree.refresh();
         return "remove success from backend";
     }
 
-    //返回一个knowledge下所有learning tasks（不包括subKnowledge中的），具体包括其desc和content，其中content包括desc和src
-    @GetMapping("knowledge/getLearningTasks")
-    public String getLearningTasks(int id){
-        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.getLearningTasks", "id="+ id);
-        List<LearningTask> learningTasks = searcher.getLearningTasks(id);
-        JsonArray res = new JsonArray();
-        for(LearningTask task: learningTasks){
-            JsonObject taskJson = new JsonObject();
-            taskJson.addProperty("desc", task.getDesc());
-            taskJson.addProperty("id",task.getId());
-            taskJson.addProperty("knowledgeId",task.getKnowledgeId());
-            taskJson.addProperty("superTaskId",task.getSuperTaskId());
-
-            res.add(taskJson);
-        }
-        ConsoleUtils.printLocation(getClass(), new Gson().toJson(res));
-        return res.toString();
+    //返回一个knowledge下所有learning cards（不包括subKnowledge中的），具体包括其desc和content，其中content包括desc和src
+    @GetMapping("knowledge/getLearningCards")
+    public String getLearningCards(int id){
+        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.getLearningCards", "id="+ id);
+        List<LearningCard> learningCards = searcher.getLearningCards(id);
+        return JsonUtils.toJson(learningCards);
     }
 
-    @GetMapping("knowledge/addLearningTask")
-    public String addLearningTask(int id){
-        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.addLearningTask", "id="+id);
-        LearningTask task = repository.create(LearningTask.class);
-        task.setId(repository.getByType(LearningTask.class).size());
-        task.setKnowledgeId(id);
-        task.setDesc("empty...");
-        return JsonUtils.toJson(task);
+    @GetMapping("knowledge/addLearningCard")
+    public String addLearningCard(int id){
+        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.addLearningCard", "id="+id);
+        LearningCard card = repository.create(LearningCard.class);
+        card.setId(repository.getByType(LearningCard.class).size());
+        card.setKnowledgeId(id);
+        card.setDescription("empty...");
+        return JsonUtils.toJson(card);
     }
 
-    @GetMapping("knowledge/updateLearningTask")
-    public String updateLearningTask(String json) throws DataClearedException {
-        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateLearningTask", "json:" + json);
-        JsonObject taskJson = new Gson().fromJson(json, JsonObject.class);
-        int id = taskJson.get("id").getAsInt();
-        String desc = taskJson.get("desc").getAsString();
-        int superTaskId = taskJson.get("superTaskId").getAsInt();
-        int knowledgeId = taskJson.get("knowledgeId").getAsInt();
-        LearningTask task = repository.getById(id, LearningTask.class);
-        task.setDesc(desc);
-        task.setSuperTaskId(superTaskId);
-        task.setKnowledgeId(knowledgeId);
+    @GetMapping("knowledge/updateLearningCard")
+    public String updateLearningCard(String json){
+        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateLearningCard", "json:" + json);
+        JsonObject cardJson = new Gson().fromJson(json, JsonObject.class);
+        int id = cardJson.get("id").getAsInt();
+        int knowledgeId = cardJson.get("knowledgeId").getAsInt();
+        String desc = cardJson.get("description").getAsString();
+        String resource = cardJson.get("resource").getAsString();
+        LearningCard card = repository.getById(id, LearningCard.class);
+        card.setDescription(desc);
+        card.setResource(resource);
+        card.setKnowledgeId(knowledgeId);
 
-        return JsonUtils.toJson(task);
+        return JsonUtils.toJson(card);
     }
 
-    @GetMapping("/knowledge/removeLearningTask")
-    public String removeLearningTask(int id){
-        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.removeLearningTask", "id="+id);
-        try {
-            repository.remove(repository.getById(id,LearningTask.class));
-            return "Learning task removed.";
-        } catch (DataClearedException e) {
-            return "Learning task with id=" + id + " is not found.";
-        }
+    @GetMapping("/knowledge/removeLearningCard")
+    public String removeLearningCard(int id){
+        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.removeLearningCard", "id="+id);
+        repository.remove(repository.getById(id, LearningCard.class));
+        return "Learning card removed.";
+
     }
 }

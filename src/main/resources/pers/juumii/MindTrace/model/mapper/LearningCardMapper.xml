@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.juumii.MindTrace.model.mapper.LearningCardMapper">
+    
+    <insert id="insert">
+        insert into learning_card (knowledge_id, description, resource, id)
+        values(#{data.knowledgeId}, #{data.description}, #{data.resource}, #{data.id})
+    </insert>
+    <update id="update">
+        update learning_card set
+        knowledge_id = #{data.knowledgeId},
+        description = #{data.description},
+        id = #{data.id},
+        resource = #{data.resource}
+        where id = #{data.id}
+    </update>
+    <delete id="deleteById">
+        delete from learning_card where id = #{id}
+    </delete>
+    <select id="queryByKnowledgeId" resultType="learningCard">
+        select * from learning_card where knowledge_id = #{knowledgeId}
+    </select>
+    <select id="queryById" resultType="learningCard">
+        select * from learning_card where id = #{id}
+    </select>
+    <select id="queryAll" resultType="learningCard">
+        select * from learning_card
+    </select>
+</mapper>

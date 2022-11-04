@@ -13,25 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class LearningRecord implements Persistent {
 
-    private int id;
-    private int taskId;
-    private String desc;
-    private int completion;
+    private int id, cardId, completion;
+    private String description;
     private LocalDateTime time;
 
     public boolean isLike(String keyword) {
-        return desc.contains(keyword);
+        return description.contains(keyword);
     }
 
-    public void clear(){
-        taskId = 0;
-        desc = null;
-        completion = 0;
-        time = null;
-    }
-
-    public boolean isClear(){
-        return taskId == 0 && desc == null && completion == 0 & time == null;
-    }
 
 }

@@ -3,7 +3,6 @@ package pers.juumii.MindTrace.model.service;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.stereotype.Service;
-import pers.juumii.MindTrace.exception.DataClearedException;
 import pers.juumii.MindTrace.model.data.*;
 import pers.juumii.MindTrace.model.mapper.*;
 import pers.juumii.MindTrace.model.mapper.utils.DataMapper;
@@ -31,12 +30,10 @@ public class Repository {
     // data type到mapper的映射
     @SuppressWarnings("all")
     private final Map<Class<? extends Persistent>, DataMapper> mappers = Map.of(
-            Content.class, SqlSessionUtils.getMapper(ContentMapper.class),
-            QuizCard.class, SqlSessionUtils.getMapper(QuizCardMapper.class),
             Knowledge.class, SqlSessionUtils.getMapper(KnowledgeMapper.class),
-            LearningTask.class, SqlSessionUtils.getMapper(LearningTaskMapper.class),
+            LearningCard.class, SqlSessionUtils.getMapper(LearningCardMapper.class),
             LearningRecord.class, SqlSessionUtils.getMapper(LearningRecordMapper.class),
-            QuizTask.class, SqlSessionUtils.getMapper(QuizTaskMapper.class),
+            QuizCard.class, SqlSessionUtils.getMapper(QuizCardMapper.class),
             QuizRecord.class, SqlSessionUtils.getMapper(QuizRecordMapper.class),
             Settings.class, SqlSessionUtils.getMapper(SettingsMapper.class));
     private List<Persistent> dataRepository;
@@ -74,11 +71,9 @@ public class Repository {
 
     //get方法。由于repository中可能存有已经clear但没有体现在数据库中的数据，所以get原则上都要除去clear的数据
     @SuppressWarnings("unchecked")
-    public <T extends Persistent> T getById(int id, Class<T> prototype) throws DataClearedException {
+    public <T extends Persistent> T getById(int id, Class<T> prototype){
         T res = (T) DataUtils.getIf(dataRepository, data -> data.getId() == id && prototype.isInstance(data));
-        if(res != null && res.isClear())
-            throw new DataClearedException("pers.juumii.MindTrace.model.service.Repository.getById: knowledge with id: "+id+" has been removed.");
-        return res;
+        return res == null || res.isClear() ? null: res;
     }
     @SuppressWarnings("unchecked")
     public <T extends Persistent> List<T> getByType(Class<T> prototype){
@@ -101,7 +96,7 @@ public class Repository {
     public void remove(Persistent data){
         data.clear();
     }
-    public <T extends Persistent> void removeById(int id, Class<T> prototype) throws DataClearedException {
+    public <T extends Persistent> void removeById(int id, Class<T> prototype){
         remove(getById(id, prototype));
     }
     public <T extends Persistent> void removeByKeyword(String keyword, Class<T> prototype){
