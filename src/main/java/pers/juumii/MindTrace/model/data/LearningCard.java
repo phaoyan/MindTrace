@@ -3,13 +3,15 @@ package pers.juumii.MindTrace.model.data;
 import lombok.*;
 import pers.juumii.MindTrace.model.service.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
+import pers.juumii.MindTrace.utils.SpringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @ToString
-public class LearningCard implements Persistent, Linkable{
+public class LearningCard implements Linkable{
 
     private int id, knowledgeId;
     private String description, resource;
@@ -23,5 +25,20 @@ public class LearningCard implements Persistent, Linkable{
     @Override
     public void link(Repository repository){
         setLearningRecords(DataUtils.getAllIf(repository.getByType(LearningRecord.class), record->record.getCardId()==id));
+    }
+
+    @Override
+    public List<Persistent> queryLinked() {
+        return new ArrayList<>(learningRecords);
+    }
+
+    public static LearningCard protoType() {
+        LearningCard res = new LearningCard();
+        res.setId(SpringUtils.getBean(Repository.class).getByType(LearningCard.class).size());
+        res.setKnowledgeId(-1);
+        res.setLearningRecords(new ArrayList<>());
+        res.setDescription("empty...");
+        res.setResource("empty...");
+        return res;
     }
 }

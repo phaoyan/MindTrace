@@ -19,6 +19,9 @@
     <delete id="deleteById">
         delete from quiz_record where id = #{id}
     </delete>
+    <delete id="deleteAll">
+        delete from quiz_record
+    </delete>
     <select id="queryByTaskId" resultType="quizRecord">
         select * from quiz_record where card_id = #{cardId}
     </select>

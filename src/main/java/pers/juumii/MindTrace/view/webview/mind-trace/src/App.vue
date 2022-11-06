@@ -6,148 +6,98 @@ import axios from 'axios'
 
 // knowledge folder 中选中的元素的索引链
 const selectedIndexes = ref([])
-const selectedKnowledge = ref({})
-// kTree
-const kTree = ref({})
+const selectedKNode = ref({})
+// kRoot
+const kRoot = ref({})
+const folderUpdate = ref(true)
 const data = {
   selectedIndexes: selectedIndexes,
-  selectedKnowledge: selectedKnowledge,
-  kTree: kTree
+  selectedKNode: selectedKNode,
+  kRoot: kRoot,
+  folderUpdate: folderUpdate
 }
 
-
-const getKTree = async ()=>{
-  let kroot
-  await axios.get("http://localhost:9090/knowledge/getRoot").then(e=>{
-      kroot = e.data
+const loadKNode = async (id)=>{
+  let kNode
+  await axios.get("http://localhost:9090/KNode/load?id="+id).then((e)=>{
+    kNode = e.data
+    console.log("getKNode success: ")
+    console.log(kNode)
   })
-  console.log("request:")
-  console.log(kroot)
-  return kroot
+  return kNode
 }
-const getKnowledgeById = async (id)=>{
-  let knowledge
-  await axios.get("http://localhost:9090/knowledge/getKnowledgeById?id="+id).then(e=>knowledge = e.data)
-  console.log("get knowledge by id:")
-  console.log(knowledge)
-  return knowledge
-}
-const addKnowledgeBySuperId = async (superId)=>{
-  if(superId == undefined)
-    superId = 0
-  await axios.get("http://localhost:9090/knowledge/addKnowledgeBySuperId?superId="+superId).then(e=>{
-    console.log("add knowledge success: ")
-    console.log(e.data)
-  })
-}
-const removeKnowledgeById = async (id)=>{
-  if(id == undefined)
-    id = 0
-  await axios.get("http://localhost:9090/knowledge/remove?id="+id).then(e=>{
-    console.log("remove knowledge success: ")
-    console.log(e.data)
-  })
-}
-const updateKnowledge = async (knowldege)=>{
-  console.log("update knowledge")
-  console.log(knowldege)
+const synchronizeKNode = async (newState)=>{
+  console.log("synchronize: ")
+  console.log(newState)
   await axios({
-    method:"post",
-    url:"http://localhost:9090/knowledge/update",
-    data:knowldege
+    method:"POST",
+    url:"http://localhost:9090/KNode/synchronize",
+    data:newState
+  }).then(()=>{
+    console.log("update data success.")
   })
 }
-
-const addLearningTask = async (knowledge)=>{
-  if(knowledge.id == undefined)
-    return
-
-  await axios.get("http://localhost:9090/knowledge/addLearningCard?id="+knowledge.id).then(e=>{
-    console.log("add learning card success: ")
-    console.log(e.data)
-  })
-}
-const updateLearningTask = async (task)=>{
-  if(task.id == undefined)
-    return
-
-  await axios.get("http://localhost:9090/knowledge/updateLearningCard", {params:{json:JSON.stringify(task)}}).then(e=>{
-    console.log("update learning card success: ")
-    console.log(e.data)
-  })
-}
-const removeLearningTask = async (task)=>{
-  if(task.id == undefined)
-    return
-
-  await axios.get("http://localhost:9090/knowledge/removeLearningCard?id="+task.id).then(e=>{
-    console.log("remove learning task success: ")
-    console.log(e.data)
-  })
+const getProtoType = async (type)=>{
+  let res
+  await axios.get("http://localhost:9090/KNode/protoType?type="+type).then(e=>res=e.data)
+  console.log("protoType: ")
+  console.log(res)
+  return res
 }
 const request = {
-    getKTree: getKTree,
-    getKnowledgeById: getKnowledgeById,
-    addKnowledgeBySuperId: addKnowledgeBySuperId,
-    removeKnowledgeById: removeKnowledgeById,
-    updateKnowledge: updateKnowledge,
-    addLearningTask: addLearningTask,
-    updateLearningTask: updateLearningTask,
-    removeLearningTask: removeLearningTask
+  loadKNode: loadKNode,
+  synchronizeKNode: synchronizeKNode,
+  getProtoType: getProtoType
 }
 
-const updateSelectedIndexes = async (newSelected)=>{
-  selectedIndexes.value = newSelected
-  await request.getKnowledgeById(selectedIndexes.value[selectedIndexes.value.length-1]).then(e => selectedKnowledge.value = e)
+
+const getRoot = async ()=>{
+  await request.loadKNode(0).then(e=>kRoot.value=e)
+  folderUpdate.value = !folderUpdate.value
 }
-const updateSelectedKnowledge = async()=>{
-  await request.updateKnowledge(selectedKnowledge.value)
-  await request.getKTree().then(e=>kTree.value = e)
+const updateKNode = async (kNode)=>{
+  await request.synchronizeKNode(kNode)
 }
-const addSubKnowledge = async ()=>{
-  await request.addKnowledgeBySuperId(selectedKnowledge.value.id)
-  await request.getKTree().then(e=>kTree.value = e)
+const updateSelectedKNode = ()=>{
+  data.selectedKNode.value = data.kRoot.value
+  for(let i = 1; i < data.selectedIndexes.value.length; i ++){
+    for(let j = 0; j < data.selectedKNode.value.subKNodes.length; j ++){
+      if(data.selectedKNode.value.subKNodes[j].data.id == data.selectedIndexes.value[i]){
+        data.selectedKNode.value = data.selectedKNode.value.subKNodes[j]
+        // console.log("kRoot afterChange:")
+        // console.log(kRoot)
+      }
+    }
+  }
 }
-const removeKnowledge = async ()=>{
-  let tempIndexes = selectedIndexes.value.slice(0,-1)
-  await request.removeKnowledgeById(selectedKnowledge.value.id)
-  await request.getKTree().then(e=>kTree.value = e)
-  updateSelectedIndexes(tempIndexes)
+const updateSelectedIndexes = async (selectIndexes)=>{
+  data.selectedIndexes.value = selectIndexes
+  updateSelectedKNode()
+  // console.log("update selected:")
+  // console.log(selectedIndexes.value)
+  // console.log(selectedKNode.value)
 }
-const updateSelectedLearningTask = async (task)=>{
-  await request.updateLearningTask(task)
-}
-const U_addLearningTask = async ()=>{
-  await request.addLearningTask(selectedKnowledge.value)
-  await request.getKnowledgeById(selectedKnowledge.value.id).then(e => selectedKnowledge.value = e) 
-}
-const U_removeLearningTask = async (task)=>{
-  await request.removeLearningTask(task)
-  await request.getKnowledgeById(selectedKnowledge.value.id).then(e => selectedKnowledge.value = e) 
-}
-const update = {
-  updateSelectedIndexes: updateSelectedIndexes,
-  updateSelectedKnowledge: updateSelectedKnowledge,
-  addSubKnowledge: addSubKnowledge,
-  removeKnowledge: removeKnowledge,
-  updateSelectedLearningTask: updateSelectedLearningTask,
-  U_addLearningTask: U_addLearningTask,
-  U_removeLearningTask: U_removeLearningTask
+const operation = {
+  getRoot: getRoot,
+  updateKNode: updateKNode,
+  updateSelectedIndexes: updateSelectedIndexes
 }
 provide('data',data)
-provide('update',update)
+provide('operation',operation)
+provide('getProtoType',request.getProtoType)
 
 // 挂载后初始化data
 onMounted(async ()=>{
-  await request.getKTree().then(e=>kTree.value = e)
+  await operation.getRoot()
+  await operation.updateSelectedIndexes([0])
 })
 
 </script>
 
 <template>
   <div class="container">
-    <knowledge-folder/>
-    <knoledge-content/>
+    <!-- <knowledge-folder/>
+    <knoledge-content/> -->
   </div>
 </template>
 

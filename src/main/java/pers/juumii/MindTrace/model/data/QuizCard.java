@@ -5,17 +5,29 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pers.juumii.MindTrace.model.service.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
+import pers.juumii.MindTrace.utils.SpringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @ToString
 @NoArgsConstructor
-public class QuizCard implements Persistent, Linkable{
+public class QuizCard implements Linkable{
 
     private int id, knowledgeId;
     private String description, front, back;
-    private List<QuizRecord> quizRecords;
+    private List<QuizRecord> quizRecords = new ArrayList<>();
+
+    public static QuizCard protoType() {
+        QuizCard res = new QuizCard();
+        res.setId(SpringUtils.getBean(Repository.class).getByType(QuizCard.class).size());
+        res.setKnowledgeId(-1);
+        res.setFront("front: empty...");
+        res.setBack("back: empty...");
+        res.setDescription("description: empty...");
+        return res;
+    }
 
     public boolean isLike(String keyword) {
         return description.contains(keyword);
@@ -25,5 +37,10 @@ public class QuizCard implements Persistent, Linkable{
     @Override
     public void link(Repository repository){
         setQuizRecords(DataUtils.getAllIf(repository.getByType(QuizRecord.class), record->record.getCardId()==id));
+    }
+
+    @Override
+    public List<Persistent> queryLinked() {
+        return new ArrayList<>(quizRecords);
     }
 }

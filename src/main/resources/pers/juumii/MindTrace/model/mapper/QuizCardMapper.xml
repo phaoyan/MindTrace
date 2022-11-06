@@ -22,6 +22,9 @@
     <delete id="deleteById">
         delete from quiz_card where id = #{id}
     </delete>
+    <delete id="deleteAll">
+        delete from quiz_card
+    </delete>
 
     <select id="queryByKnowledgeId" resultType="quizCard">
         select * from quiz_card where knowledge_id = #{knowledgeId}

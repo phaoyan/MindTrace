@@ -13,6 +13,9 @@
     <delete id="deleteById">
         delete from settings where id = #{id}
     </delete>
+    <delete id="deleteAll">
+        delete from settings
+    </delete>
     <select id="queryById" resultType="pers.juumii.MindTrace.model.data.Settings">
         select * from settings where id = #{id}
     </select>

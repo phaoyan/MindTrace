@@ -14,20 +14,17 @@ import java.util.Random;
 class RepositoryTest {
 
     public Repository repo;
-    public LinkingSearcher searcher;
 
     public RepositoryTest(){
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
         repo = ctx.getBean(Repository.class);
-        searcher = ctx.getBean(LinkingSearcher.class);
     }
 
 
     @Test
-    void deleteAll(){
+    void clear(){
         repo.load();
-        for(Persistent data: repo.getAll())
-            data.clear();
+        repo.clear();
         repo.commit();
     }
 
@@ -126,5 +123,13 @@ class RepositoryTest {
         repo.load();
         Knowledge knowledge = repo.getById(2, Knowledge.class);
         System.out.println(JsonUtils.readJson(JsonUtils.toJson(knowledge), Knowledge.class));
+    }
+
+    @Test
+    void put() {
+        repo.load();
+        Knowledge knowledge = repo.getById(1, Knowledge.class);
+        repo.clear();
+        repo.put(knowledge);
     }
 }

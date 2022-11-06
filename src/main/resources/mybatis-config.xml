@@ -12,8 +12,8 @@
     <typeAliases>
         <package name="pers.juumii.MindTrace.model.data"/>
     </typeAliases>
-    <environments default="test">
-        <environment id="development">
+    <environments default="beta">
+        <environment id="beta">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
                 <property name="driver" value="${jdbc.driver}"/>

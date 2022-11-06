@@ -1,20 +1,26 @@
 <script setup>
-import {ref, onMounted, inject, watch} from 'vue'
+import {ref, inject, watch} from 'vue'
+import LearningCardPanel from './LearningCardPanel.vue'
+import QuizCardPanel from './QuizCardPanel.vue'
 
 const data = inject('data')
-const update = inject('update')
+const operation = inject('operation')
 
 const pageSelected = ref("learningCards")
+
 
 </script>
 
 <template>
-    <el-container>
+    <el-container v-if="data.selectedKNode.value.data != null">
         <el-header class="header">
             <input 
             class="knowledge-title" 
-            v-model="data.selectedKnowledge.value.description"
-            @change="()=>update.updateSelectedKnowledge()"/>
+            v-model="data.selectedKNode.value.data.description"
+            @change="()=>{
+                operation.updateKNode(data.selectedKNode.value)
+                data.folderUpdate.value = !data.folderUpdate.value
+            }"/>
             <el-dropdown 
             class="select"
             @command="newPage=>pageSelected = newPage">
@@ -37,45 +43,8 @@ const pageSelected = ref("learningCards")
                 <el-container v-if="pageSelected == 'info'">
                     <el-button/>
                 </el-container>
-
-                <!-- Learning Cards -->
-                <el-container v-if="pageSelected == 'learningCards'" direction="vertical">
-                    <el-card 
-                    class="learning-task-card"
-                    v-for="card in data.selectedKnowledge.value.learningCards" :key="card">
-                        <template #header>
-                            <input 
-                            class="clear-input" 
-                            v-model="card.description"
-                            @change="()=>update.updateSelectedLearningTask(card)"/>
-                            <el-button 
-                            @click="update.U_removeLearningTask(card)">
-                            <el-icon><Delete /></el-icon>
-                            </el-button>
-                        </template>
-
-                        <input 
-                        class="clear-input" 
-                        v-model="card.resource"
-                        @change="()=>update.updateSelectedLearningTask(card)"/>
-                    </el-card>
-                    <el-card class="add-task-card">
-                        <el-icon 
-                        class="add-task-icon" 
-                        size="150%"
-                        @click="update.U_addLearningTask()">
-                        <Plus />
-                        </el-icon>
-                    </el-card>
-                </el-container>
-
-                <!-- Quiz Cards -->
-                <el-container v-if="pageSelected == 'quizCards'">
-                    <el-card v-for="card in data.selectedKnowledge.value.quizCards" :key="card">
-                        <el-switch v-model="value1" />
-                        {{value1}}
-                    </el-card>
-                </el-container>
+                <LearningCardPanel v-if="pageSelected == 'learningCards'"/>
+                <QuizCardPanel v-if="pageSelected == 'quizCards'"/>
             </el-scrollbar>
         </el-main>
     </el-container>
@@ -100,9 +69,7 @@ const pageSelected = ref("learningCards")
     font-weight: lighter;
     font-style: italic; 
 }
-.icon-button{
-    cursor: pointer;
-}
+
 
 .header{
     display:flex;
@@ -126,10 +93,6 @@ const pageSelected = ref("learningCards")
 .add-task-card:hover{
     background-color: beige;
 }
-.add-task-icon{
-    .icon-button();
-}
-.learning-task-card{
-    margin-bottom: 2vh;
-}
+
+
 </style>

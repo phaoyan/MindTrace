@@ -1,43 +1,56 @@
 <script setup>
-import {onMounted, ref, inject, watch} from "vue"
+import {ref, inject, watch, onMounted} from "vue"
 
 const data = inject('data')
-const update = inject('update')
+const operation = inject('operation')
+const getProtoType = inject('getProtoType')
 
 const options = ref([])
 const cascaderProps = {
     checkStrictly: true
 }
 
-watch(data.kTree, ()=>{
-    options.value = _renderKTree([data.kTree.value])
+watch(data.folderUpdate, ()=>{
+    options.value = renderOptions([data.kRoot.value])
 })
 
-// kroots: array of knodes;
-// return: array of options
-const _renderKTree = (kroots)=>{
+const renderOptions = (kroots)=>{
     let options = []
-
     for(let index in kroots){
         let knode = kroots[index]
-        // console.log("renderKTree--for:")
-        // console.log(knode)
         if(knode.data != null){
             options.push({
                 value: knode.data.id,
                 label: knode.data.description,
-                children: _renderKTree(knode.subKNodes)
+                children: renderOptions(knode.subKNodes)
             })
         }
     }
-    // console.log("_renderKTree:")
-    // console.log(options)
     return options
 }
 
-const renderKTree = (kroot)=>{
-    return _renderKTree(kroot.subKNodes)
+const addKNode = async ()=>{
+    let kNode
+    await getProtoType('kNode').then(e=>kNode = e)
+    kNode.data.superKnowledgeId = data.selectedKNode.value.data.id
+    data.selectedKNode.value.subKNodes.push(kNode)
+    operation.updateKNode(data.selectedKNode.value)
+    options.value = renderOptions([data.kRoot.value])
 }
+
+const removeKNode = async ()=>{
+    let tempId = data.selectedKNode.value.data.id
+    data.selectedIndexes.value.pop()
+    operation.updateSelectedIndexes(data.selectedIndexes.value)
+    for(let i = 0; i < data.selectedKNode.value.subKNodes.length; i ++){
+        if(tempId == data.selectedKNode.value.subKNodes[i].data.id){
+            data.selectedKNode.value.subKNodes.splice(i,1)
+        }
+    }
+    operation.updateKNode(data.selectedKNode.value)
+    options.value = renderOptions([data.kRoot.value])
+}
+
 
 </script>
 
@@ -46,12 +59,12 @@ const renderKTree = (kroot)=>{
         <div id="knowledge-title">Knowledges</div>
         <el-button 
         class="add-sub-knowledge-button"
-        @click="update.addSubKnowledge()">
+        @click="()=>addKNode()">
             <el-icon><ArrowRightBold /></el-icon>
         </el-button>
         <el-button 
         class="remove-knowledge-button"
-        @click="update.removeKnowledge()">
+        @click="()=>removeKNode()">
             <el-icon><Delete /></el-icon>
         </el-button>
     </div>
@@ -60,8 +73,9 @@ const renderKTree = (kroot)=>{
         id="kpath" 
         :options="options"
         :props="cascaderProps"
-        @change="selected=>{update.updateSelectedIndexes(selected)}"/>
+        @change="selected=>{operation.updateSelectedIndexes(selected)}"/>
     </el-scrollbar>
+    
 </template>
 
 <style lang="less" scoped>

@@ -20,6 +20,9 @@
     <delete id="deleteById">
         delete from knowledge where id = #{id}
     </delete>
+    <delete id="deleteAll">
+        delete from knowledge
+    </delete>
     <select id="queryById" resultType="knowledge">
         select * from knowledge where id = #{id}
     </select>

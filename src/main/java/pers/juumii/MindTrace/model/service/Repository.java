@@ -38,23 +38,15 @@ public class Repository {
             Settings.class, SqlSessionUtils.getMapper(SettingsMapper.class));
     private List<Persistent> dataRepository;
 
-    /**
-      commit时，统一进行增删改：
-      如果数据进行了clear()，说明该数据被删除了，则要删除数据库中对应的数据；
-      如果数据没有clear()，那么尝试更新这个数据。如果更新成功，说明该数据在数据库中存在，并且我们将其更新了；
-      如果更新修改的行数为0，要么程序运行中我们没有修改过这个数据，要么这个数据是新增的。
-       如果是前者，则执行insert并不会改变数据库中的数据
-       如果是后者，则执行insert正常地将新数据插入数据库
-     */
+    //commit 统一进行增删改。将数据库数据全部清除，并将repository中的数据克隆回数据库
     @SuppressWarnings("all")
     public void commit(){
+        mappers.forEach((aClass, dataMapper) -> dataMapper.deleteAll());
         dataRepository.forEach(data ->{
             for(Class<? extends Persistent> type: mappers.keySet()){
                 if(type.isInstance(data)){
                     DataMapper mapper = mappers.get(type);
-                    if(data.isClear())
-                        mapper.deleteById(data.getId());
-                    else if(mapper.update(data) == 0)
+                    if(mapper.update(data) == 0)
                         mapper.insert(data);
                 }
             }
@@ -70,23 +62,33 @@ public class Repository {
         DataUtils.forAllIf(dataRepository, data->data instanceof Linkable, data->((Linkable) data).link(this));
     }
 
+    public void clear(){
+        dataRepository = new ArrayList<>();
+    }
+
+    public <T extends Persistent> void put(T data) {
+        //查重
+        if(getById(data.getId(), data.getClass()) != null)
+            return;
+        //如果data为Linkable，则其成员对象也要录入repository中
+        if(data instanceof Linkable)
+            ((Linkable) data).queryLinked().forEach(this::put);
+        dataRepository.add(data);
+    }
+
     //get方法。由于repository中可能存有已经clear但没有体现在数据库中的数据，所以get原则上都要除去clear的数据
     @SuppressWarnings("unchecked")
     public <T extends Persistent> T getById(int id, Class<T> prototype){
-        T res = (T) DataUtils.getIf(dataRepository, data -> data.getId() == id && prototype.isInstance(data));
-        return res == null || res.isClear() ? null: res;
+        return (T) DataUtils.getIf(dataRepository, data -> data.getId() == id && prototype.isInstance(data));
     }
     @SuppressWarnings("unchecked")
     public <T extends Persistent> List<T> getByType(Class<T> prototype){
-        List<T> res = (List<T>) DataUtils.getAllIf(dataRepository, prototype::isInstance);
-        res.removeIf(Persistent::isClear);
-        return res;
+        return  (List<T>) DataUtils.getAllIf(dataRepository, prototype::isInstance);
+
     }
     @SuppressWarnings("unchecked")
     public <T extends Persistent> List<T> getByKeyword(String keyword, Class<T> prototype){
-        List<T> res = (List<T>) DataUtils.getAllIf(dataRepository, data -> data.isLike(keyword) && prototype.isInstance(data));
-        res.removeIf(Persistent::isClear);
-        return res;
+        return  (List<T>) DataUtils.getAllIf(dataRepository, data -> data.isLike(keyword) && prototype.isInstance(data));
     }
     public List<Persistent> getAll(){
         return dataRepository;
@@ -95,7 +97,7 @@ public class Repository {
 
     // remove
     public void remove(Persistent data){
-        data.clear();
+        dataRepository.remove(data);
     }
     public <T extends Persistent> void removeById(int id, Class<T> prototype){
         remove(getById(id, prototype));
