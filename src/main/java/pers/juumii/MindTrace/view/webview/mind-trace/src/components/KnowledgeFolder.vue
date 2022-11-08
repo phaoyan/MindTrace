@@ -1,5 +1,5 @@
 <script setup>
-import {ref, inject, watch, onMounted} from "vue"
+import {ref, inject, watch} from "vue"
 
 const data = inject('data')
 const operation = inject('operation')
@@ -55,18 +55,23 @@ const removeKNode = async ()=>{
 </script>
 
 <template>
-    <div class="header">
-        <div id="knowledge-title">Knowledges</div>
-        <el-button 
-        class="add-sub-knowledge-button"
-        @click="()=>addKNode()">
-            <el-icon><ArrowRightBold /></el-icon>
-        </el-button>
-        <el-button 
-        class="remove-knowledge-button"
-        @click="()=>removeKNode()">
-            <el-icon><Delete /></el-icon>
-        </el-button>
+    <div class="header space-between">
+        <div class="left">
+            <div id="knowledge-title">Knowledges</div>
+            <el-button 
+            class="add-sub-knowledge-button"
+            @click="()=>addKNode()">
+                <el-icon><ArrowRightBold /></el-icon>
+            </el-button>
+            <el-button 
+            class="remove-knowledge-button"
+            @click="()=>removeKNode()">
+                <el-icon><Delete /></el-icon>
+            </el-button>
+        </div>
+        <div class="right">
+            <slot></slot>
+        </div>
     </div>
     <el-scrollbar id="kpath-scroll">
         <el-cascader-panel 
@@ -80,8 +85,13 @@ const removeKNode = async ()=>{
 
 <style lang="less" scoped>
 .header{
-    display: flex;
     margin-top: 2vh;
+}
+.left{
+    display: flex;
+}
+.right{
+    margin-right: 2vw;
 }
 .add-sub-knowledge-button{
     margin-bottom: 2vw;

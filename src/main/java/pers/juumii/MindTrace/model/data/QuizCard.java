@@ -3,6 +3,7 @@ package pers.juumii.MindTrace.model.data;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pers.juumii.MindTrace.model.service.KTree;
 import pers.juumii.MindTrace.model.service.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
 import pers.juumii.MindTrace.utils.SpringUtils;
@@ -21,7 +22,7 @@ public class QuizCard implements Linkable{
 
     public static QuizCard protoType() {
         QuizCard res = new QuizCard();
-        res.setId(SpringUtils.getBean(Repository.class).getByType(QuizCard.class).size());
+        res.setId(SpringUtils.getBean(KTree.class).quizCardSize()+1);
         res.setKnowledgeId(-1);
         res.setFront("front: empty...");
         res.setBack("back: empty...");

@@ -1,19 +1,33 @@
 <script setup>
-import {ref, inject, watch} from 'vue'
+import {ref, inject} from 'vue'
 import LearningCardPanel from './LearningCardPanel.vue'
 import QuizCardPanel from './QuizCardPanel.vue'
 
 const data = inject('data')
 const operation = inject('operation')
 
-const pageSelected = ref("learningCards")
+const pageSelected = ref("quizCards")
 
+const pageOptions = [
+    {
+        label:"info",
+        value:"info"
+    },
+    {
+        label:"quizCards",
+        value:"quizCards"
+    },
+    {
+        label:"learningCards",
+        value:"learningCards"
+    }
+]
 
 </script>
 
 <template>
     <el-container v-if="data.selectedKNode.value.data != null">
-        <el-header class="header">
+        <el-header class="header space-between">
             <input 
             class="knowledge-title" 
             v-model="data.selectedKNode.value.data.description"
@@ -21,22 +35,18 @@ const pageSelected = ref("learningCards")
                 operation.updateKNode(data.selectedKNode.value)
                 data.folderUpdate.value = !data.folderUpdate.value
             }"/>
-            <el-dropdown 
-            class="select"
-            @command="newPage=>pageSelected = newPage">
-                <el-button>
-                    <el-icon>
-                        <arrow-down />
-                    </el-icon>
-                </el-button>
-                <template #dropdown>
-                    <el-dropdown-menu>
-                        <el-dropdown-item command="info">Info</el-dropdown-item>
-                        <el-dropdown-item command="learningCards">Learning Tasks</el-dropdown-item>
-                        <el-dropdown-item command="quizCards">Quiz Tasks</el-dropdown-item>
-                    </el-dropdown-menu>
-                </template>
-            </el-dropdown>
+            <el-button
+            class="icon-button vertical-center"
+            @click="()=>operation.openLink()">
+            <el-icon><Link /></el-icon>
+            </el-button>
+            <div class="selection-wrapper vertical-center">
+                <el-cascader 
+                class="select" 
+                :options="pageOptions" 
+                v-model="pageSelected"
+                size="50%"/>
+            </div>
         </el-header>
         <el-main class="main">
             <el-scrollbar class="main-scroll">
@@ -58,7 +68,6 @@ const pageSelected = ref("learningCards")
     border: none;
     width: 80%;
 }
-
 .middle-font{
     font-size: 120%;
     font-weight: lighter;
@@ -69,20 +78,14 @@ const pageSelected = ref("learningCards")
     font-weight: lighter;
     font-style: italic; 
 }
-
-
-.header{
-    display:flex;
-    justify-content: space-between;
-}
 .knowledge-title{
     width: 50vw !important;
     .clear-input();
     .large-font();
     margin: 2vw;
 }
-.select{
-    margin: auto 0;
+.selection-wrapper{
+    margin: auto 2vw;
 }
 .main-scroll{
     height: 45vh !important;

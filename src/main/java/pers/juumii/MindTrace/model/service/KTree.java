@@ -56,4 +56,22 @@ public class KTree {
     public int size() {
         return root.size();
     }
+
+    public int quizCardSize(){
+        int res = 0;
+        for(KNode kNode: root.queryKNodeBeneath())
+            res += kNode.getData().getQuizCards().size();
+        return res;
+    }
+
+    public int learningCardSize(){
+        int res = 0;
+        for(KNode kNode: root.queryKNodeBeneath())
+            res += kNode.getData().getLearningCards().size();
+        return res;
+    }
+
+    public void setRoot(KNode root) {
+        this.root = root;
+    }
 }

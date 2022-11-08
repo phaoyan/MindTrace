@@ -1,6 +1,7 @@
 package pers.juumii.MindTrace.model.data;
 
 import lombok.*;
+import pers.juumii.MindTrace.model.service.KTree;
 import pers.juumii.MindTrace.model.service.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
 import pers.juumii.MindTrace.utils.SpringUtils;
@@ -34,7 +35,7 @@ public class LearningCard implements Linkable{
 
     public static LearningCard protoType() {
         LearningCard res = new LearningCard();
-        res.setId(SpringUtils.getBean(Repository.class).getByType(LearningCard.class).size());
+        res.setId(SpringUtils.getBean(KTree.class).learningCardSize()+1);
         res.setKnowledgeId(-1);
         res.setLearningRecords(new ArrayList<>());
         res.setDescription("empty...");

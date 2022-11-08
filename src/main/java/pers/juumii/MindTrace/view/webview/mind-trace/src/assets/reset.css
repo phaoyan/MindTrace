@@ -61,3 +61,13 @@ table {
 .icon-button{
     cursor: pointer;
 }
+
+.space-between{
+	display: flex;
+	justify-content: space-between;
+}
+
+.vertical-center{
+	margin-top: auto;
+    margin-bottom: auto;
+}

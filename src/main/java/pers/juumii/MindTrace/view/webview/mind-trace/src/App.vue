@@ -4,17 +4,21 @@ import KnoledgeContent from './components/KnoledgeContent.vue'
 import {ref, provide, onMounted} from 'vue'
 import axios from 'axios'
 
+const pageSelected = ref('repository')
+
 // knowledge folder 中选中的元素的索引链
 const selectedIndexes = ref([])
 const selectedKNode = ref({})
 // kRoot
 const kRoot = ref({})
 const folderUpdate = ref(true)
+const selectedText = ref("")
 const data = {
   selectedIndexes: selectedIndexes,
   selectedKNode: selectedKNode,
   kRoot: kRoot,
-  folderUpdate: folderUpdate
+  folderUpdate: folderUpdate,
+  selectedText: selectedText
 }
 
 const loadKNode = async (id)=>{
@@ -44,13 +48,47 @@ const getProtoType = async (type)=>{
   console.log(res)
   return res
 }
+const openLink = async ()=>{
+  await axios({
+    method:"POST",
+    url:"http://localhost:9090/utils/openLink",
+    data:selectedText.value,
+    headers:{
+      'Content-Type':'text/plain'
+    }
+  }).then(()=>{
+    console.log("open link success.")
+  })
+}
+const openMarkdown = async (text)=>{
+  await axios({
+    method:"POST",
+    url:"http://localhost:9090/utils/markdown/open",
+    data:text,
+    headers:{
+      'Content-Type':'text/plain'
+    }
+  }).then(()=>{
+    console.log("open markdown success.")
+  }) 
+}
+const closeMarkdown = async ()=>{
+  let res
+  await axios.get("http://localhost:9090/utils/markdown/close").then((e)=>{
+    res = e.data
+    console.log("close markdown success.")
+    console.log(res)
+  })
+  return res
+}
 const request = {
   loadKNode: loadKNode,
   synchronizeKNode: synchronizeKNode,
-  getProtoType: getProtoType
+  getProtoType: getProtoType,
+  openLink: openLink,
+  openMarkdown: openMarkdown,
+  closeMarkdown: closeMarkdown
 }
-
-
 const getRoot = async ()=>{
   await request.loadKNode(0).then(e=>kRoot.value=e)
   folderUpdate.value = !folderUpdate.value
@@ -80,7 +118,10 @@ const updateSelectedIndexes = async (selectIndexes)=>{
 const operation = {
   getRoot: getRoot,
   updateKNode: updateKNode,
-  updateSelectedIndexes: updateSelectedIndexes
+  updateSelectedIndexes: updateSelectedIndexes,
+  openLink: openLink,
+  openMarkdown: openMarkdown,
+  closeMarkdown: closeMarkdown
 }
 provide('data',data)
 provide('operation',operation)
@@ -92,16 +133,32 @@ onMounted(async ()=>{
   await operation.updateSelectedIndexes([0])
 })
 
+//监听文字选中，将其储存在selectedText中。用于实现超链接
+document.addEventListener("selectionchange", () => {
+  data.selectedText.value = window.getSelection().toString()
+});
+
 </script>
 
 <template>
   <div class="container">
-    <!-- <knowledge-folder/>
-    <knoledge-content/> -->
+      <div class="repository" v-if="pageSelected=='repository'">
+        <knowledge-folder>
+          <el-button
+          @click="pageSelected='home'">
+            <el-icon><HomeFilled /></el-icon>
+          </el-button>
+        </knowledge-folder>
+        <knoledge-content/>
+      </div>
+      <div class="home" v-if="pageSelected=='home'">
+        HOME
+      </div>
   </div>
 </template>
 
 <style lang="less">
+
 .container{
   overflow: hidden !important;
 }
