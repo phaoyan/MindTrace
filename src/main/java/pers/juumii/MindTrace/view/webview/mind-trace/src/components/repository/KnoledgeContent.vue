@@ -44,8 +44,7 @@ const pageOptions = [
                 <el-cascader 
                 class="select" 
                 :options="pageOptions" 
-                v-model="pageSelected"
-                size="50%"/>
+                v-model="pageSelected"/>
             </div>
         </el-header>
         <el-main class="main">

@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import pers.juumii.MindTrace.SpringConfig;
-import pers.juumii.MindTrace.model.data.Knowledge;
-import pers.juumii.MindTrace.model.service.KTree;
-import pers.juumii.MindTrace.model.service.KNode;
+import pers.juumii.MindTrace.model.service.ktree.KTree;
+import pers.juumii.MindTrace.model.service.ktree.KNode;
 import pers.juumii.MindTrace.utils.JsonUtils;
 
 import java.io.IOException;

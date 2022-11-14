@@ -1,6 +1,6 @@
 package pers.juumii.MindTrace.model.data;
 
-import pers.juumii.MindTrace.model.service.Repository;
+import pers.juumii.MindTrace.model.service.ktree.Repository;
 
 import java.util.List;
 

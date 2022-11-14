@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import pers.juumii.MindTrace.SpringConfig;
 import pers.juumii.MindTrace.model.data.*;
+import pers.juumii.MindTrace.model.service.ktree.Repository;
 import pers.juumii.MindTrace.utils.JsonUtils;
 import pers.juumii.MindTrace.utils.MathUtils;
 
@@ -132,4 +133,5 @@ class RepositoryTest {
         repo.clear();
         repo.put(knowledge);
     }
+
 }

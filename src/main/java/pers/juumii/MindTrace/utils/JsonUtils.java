@@ -19,8 +19,17 @@ public class JsonUtils {
     public static <T> T readJson(String json, Class<T> cl) {
         try {
             return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false).readValue(json, cl);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException ignored) {
+        } catch (IllegalArgumentException e){
+            try {
+                return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false).readValue("{}", cl);
+            } catch (JsonProcessingException ex) {
+                try {
+                    return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false).readValue("[]", cl);
+                } catch (JsonProcessingException exc) {
+                    exc.printStackTrace();
+                }
+            }
         }
         return null;
     }

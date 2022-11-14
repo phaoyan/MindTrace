@@ -1,16 +1,16 @@
-package pers.juumii.MindTrace.model.data;
+package pers.juumii.MindTrace.model.service.ktree;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import pers.juumii.MindTrace.SpringConfig;
-import pers.juumii.MindTrace.model.service.ktree.KTree;
 
-class LearningCardTest {
+
+class KTreeJsonLoaderTest {
 
     @Test
-    void protoType() {
+    public void create(){
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
-        KTree kTree = ctx.getBean(KTree.class);
-        System.out.println(kTree.quizCardSize());
+        KTreeJsonLoader loader = ctx.getBean(KTreeJsonLoader.class);
     }
+
 }

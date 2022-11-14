@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import pers.juumii.MindTrace.SpringConfig;
 import pers.juumii.MindTrace.model.data.Knowledge;
-import pers.juumii.MindTrace.model.service.Repository;
+import pers.juumii.MindTrace.model.service.ktree.Repository;
 
 
 class QuizBasedStrategyTest {

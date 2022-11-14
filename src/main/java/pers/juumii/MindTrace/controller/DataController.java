@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import pers.juumii.MindTrace.model.data.Knowledge;
 import pers.juumii.MindTrace.model.data.LearningCard;
 import pers.juumii.MindTrace.model.data.QuizCard;
-import pers.juumii.MindTrace.model.service.KTree;
-import pers.juumii.MindTrace.model.service.KNode;
+import pers.juumii.MindTrace.model.service.ktree.KTree;
+import pers.juumii.MindTrace.model.service.ktree.KNode;
 import pers.juumii.MindTrace.utils.ConsoleUtils;
 import pers.juumii.MindTrace.utils.JsonUtils;
 
@@ -28,11 +28,11 @@ public class DataController {
 
     @SuppressWarnings("all")
     @PostMapping("/KNode/synchronize")
-    public void synchronizeKNode(@RequestBody String kNode){
-        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateKNode", kNode);
-        KNode xNode = JsonUtils.readJson(kNode, KNode.class);
-        kTree.getKNode(xNode.getData().getId()).setData(xNode.getData());
-        kTree.getKNode(xNode.getData().getId()).setSubKNodes(xNode.getSubKNodes());
+    public void synchronizeKNode(@RequestBody String kNodeJson){
+        ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateKNode", kNodeJson);
+        KNode kNode = JsonUtils.readJson(kNodeJson, KNode.class);
+        kTree.getKNode(kNode.getData().getId()).setData(kNode.getData());
+        kTree.getKNode(kNode.getData().getId()).setSubKNodes(kNode.getSubKNodes());
     }
 
     @GetMapping("/KNode/protoType")
@@ -45,5 +45,4 @@ public class DataController {
             default -> "";
         };
     }
-
 }

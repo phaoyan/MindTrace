@@ -57,6 +57,21 @@ table {
 	width: 100%;
 }
 
+.length-50{
+	width: 50%;
+}
+.length-90{
+	width: 90%;
+}
+
+
+.title{
+    margin: 0 3vw;
+    font-size: 130%;
+    font-weight: 300;
+    font-style: italic;
+	padding-bottom: 2vh;
+}
 
 .icon-button{
     cursor: pointer;

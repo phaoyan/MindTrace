@@ -3,8 +3,8 @@ package pers.juumii.MindTrace.model.data;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pers.juumii.MindTrace.model.service.KTree;
-import pers.juumii.MindTrace.model.service.Repository;
+import pers.juumii.MindTrace.model.service.ktree.KTree;
+import pers.juumii.MindTrace.model.service.ktree.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
 import pers.juumii.MindTrace.utils.SpringUtils;
 
@@ -49,7 +49,7 @@ public class Knowledge implements Linkable{
         Knowledge res = new Knowledge();
         res.setId(SpringUtils.getBean(KTree.class).size());
         res.setSuperKnowledgeId(-1);
-        res.setDescription("empty...");
+        res.setDescription("");
         res.setMasteryMin(0);
         res.setMasteryMax(100);
         res.setQuizCards(new ArrayList<>());

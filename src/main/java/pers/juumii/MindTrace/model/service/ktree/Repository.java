@@ -1,4 +1,4 @@
-package pers.juumii.MindTrace.model.service;
+package pers.juumii.MindTrace.model.service.ktree;
 
 import lombok.NoArgsConstructor;
 import lombok.ToString;

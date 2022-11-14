@@ -2,10 +2,13 @@ package pers.juumii.MindTrace.model.service.general;
 
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.SpringConfig;
+import pers.juumii.MindTrace.utils.Paths;
+import pers.juumii.MindTrace.utils.SpringUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,13 +20,13 @@ import java.util.regex.Pattern;
 public class LinkOpener {
 
     private String defaultSearchEngine;
-
     private Map<String, String> abbrMap;
 
     @SuppressWarnings("unchecked")
-    public LinkOpener(){
+    @Autowired
+    public LinkOpener(Paths paths){
         try {
-            String jsonString = FileUtils.readFileToString(new ClassPathResource("LinkOpener.json").getFile(), StandardCharsets.UTF_8);
+            String jsonString = FileUtils.readFileToString(paths.getLinkOpenerFile(), StandardCharsets.UTF_8);
             abbrMap = new Gson().fromJson(jsonString, HashMap.class);
             defaultSearchEngine = abbrMap.get("defaultSearchEngine");
         } catch (IOException e) {

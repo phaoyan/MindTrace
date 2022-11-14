@@ -1,6 +1,8 @@
 <script setup>
 import {ref, inject, watch} from "vue"
 
+const emits = defineEmits(['changePage'])
+
 const data = inject('data')
 const operation = inject('operation')
 const getProtoType = inject('getProtoType')
@@ -51,13 +53,20 @@ const removeKNode = async ()=>{
     options.value = renderOptions([data.kRoot.value])
 }
 
+const saveData = async ()=>{
+    operation.saveData()
+}
+
 
 </script>
 
 <template>
     <div class="header space-between">
         <div class="left">
-            <div id="knowledge-title">Knowledges</div>
+            <input 
+            class="clear-input title length-50" 
+            v-model="data.selectedKTree.value"
+            @change="()=>operation.updateSelectedKTreeName()"/>
             <el-button 
             class="add-sub-knowledge-button"
             @click="()=>addKNode()">
@@ -70,7 +79,14 @@ const removeKNode = async ()=>{
             </el-button>
         </div>
         <div class="right">
-            <slot></slot>
+            <el-button
+            @click="()=>saveData()">
+                <el-icon><FolderChecked /></el-icon>
+            </el-button>
+            <el-button
+            @click="emits('changePage')">
+            <el-icon><HomeFilled /></el-icon>
+          </el-button>
         </div>
     </div>
     <el-scrollbar id="kpath-scroll">
@@ -95,12 +111,6 @@ const removeKNode = async ()=>{
 }
 .add-sub-knowledge-button{
     margin-bottom: 2vw;
-}
-#knowledge-title{
-    margin: 0 3vw;
-    font-size: 130%;
-    font-weight: 300;
-    font-style: italic;
 }
 #kpath-header{
     height: 45vh;
