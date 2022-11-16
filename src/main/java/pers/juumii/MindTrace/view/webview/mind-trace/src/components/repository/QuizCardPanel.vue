@@ -123,6 +123,8 @@ const switches = ref(data.selectedKNode.value.data.quizCards.map(card=>true))
                 </div>
             </template>
         </SwitchCard>
+
+        
         <el-card class="add-card">
             <el-icon 
             class="icon-button" 

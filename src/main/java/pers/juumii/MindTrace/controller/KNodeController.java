@@ -12,11 +12,11 @@ import pers.juumii.MindTrace.utils.JsonUtils;
 
 @CrossOrigin
 @RestController
-public class DataController {
+public class KNodeController {
 
     private final KTree kTree;
 
-    public DataController(KTree kTree) {
+    public KNodeController(KTree kTree) {
         this.kTree = kTree;
     }
 

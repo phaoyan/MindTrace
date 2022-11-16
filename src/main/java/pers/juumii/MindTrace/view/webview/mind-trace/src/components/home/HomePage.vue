@@ -1,5 +1,6 @@
 <script setup>
 import {ref, inject, watch} from 'vue'
+import QuizTask from './QuizTask.vue'
 
 const emits = defineEmits(['changePage'])
 
@@ -13,9 +14,10 @@ const value = ref('')
 
 
 <template>
-    <el-container>
+    <el-container direction="vertical">
         <div class="header">
             <el-select
+            class="kTree-select"
             v-model="value"
             default-first-option
             @change="(option)=>operation.useKTree(option)">
@@ -37,5 +39,18 @@ const value = ref('')
                 <el-icon><Delete/></el-icon>
             </el-button>
         </div>
+        <el-divider/>
+        <QuizTask />
     </el-container>
 </template>
+
+<style scoped>
+.kTree-select{
+    margin-right: 1vw;
+}
+.header{
+    margin: 0 auto;
+    height: 10vh;
+    line-height: 10vh;
+}
+</style>

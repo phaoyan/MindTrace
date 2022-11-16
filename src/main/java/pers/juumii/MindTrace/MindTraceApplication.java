@@ -19,7 +19,6 @@ public class MindTraceApplication {
 			String input = ConsoleUtils.lowercaseInput("Exit: X");
 			if (input.equals("x")) {
 				SpringUtils.getBean(KTree.class).synchronize();
-
 				System.exit(0);
 			}
 		}
