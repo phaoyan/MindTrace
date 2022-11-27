@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 
 @Service
 public class Paths {
@@ -15,27 +17,29 @@ public class Paths {
                             dataRoot,
                             jsonDataRoot,
                             configRoot,
-                            kTreeIndexRoot,
-                            linkOpenerRoot,
-                            tempMarkdownRoot;
+                            settingsRoot,
+                            settingSchemaRoot,
+                            tempMarkdownRoot,
+                            jsonBackupRoot;
     @Getter
-    private final File  linkOpenerFile,
-                        kTreeIndexFile,
-                        tempMarkdownFile;
+    private final File      tempMarkdownFile;
 
     @Autowired
     public Paths(){
         String general = "config.json";
-        JsonObject generalConfigs = new Gson().fromJson(IOUtils.readFile(general), JsonObject.class);
+        JsonObject generalConfigs = null;
+        try {
+            generalConfigs = new Gson().fromJson(IOUtils.readFile(new ClassPathResource(general).getFile()), JsonObject.class);
+        } catch (IOException e) {e.printStackTrace();}
+        assert generalConfigs != null;
         resourceRoot = generalConfigs.get("resourceRoot").getAsString();
         dataRoot = resourceRoot + "data/";
         configRoot = resourceRoot + "configs/";
-        jsonDataRoot = dataRoot + "json/";
-        kTreeIndexRoot = configRoot + "kTreeIndex.json";
-        linkOpenerRoot = configRoot + "linkOpener.json";
+        jsonDataRoot = dataRoot + "json/data/";
+        settingsRoot = configRoot + "settings.json";
+        settingSchemaRoot = configRoot + "settingSchema.json";
         tempMarkdownRoot = configRoot + "tempMarkdown.md";
-        linkOpenerFile = new File(linkOpenerRoot);
-        kTreeIndexFile = new File(kTreeIndexRoot);
+        jsonBackupRoot = dataRoot + "json/backup/";
         tempMarkdownFile = new File(tempMarkdownRoot);
     }
 

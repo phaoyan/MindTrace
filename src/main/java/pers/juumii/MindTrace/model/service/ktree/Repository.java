@@ -34,8 +34,7 @@ public class Repository {
             LearningCard.class, SqlSessionUtils.getMapper(LearningCardMapper.class),
             LearningRecord.class, SqlSessionUtils.getMapper(LearningRecordMapper.class),
             QuizCard.class, SqlSessionUtils.getMapper(QuizCardMapper.class),
-            QuizRecord.class, SqlSessionUtils.getMapper(QuizRecordMapper.class),
-            Settings.class, SqlSessionUtils.getMapper(SettingsMapper.class));
+            QuizRecord.class, SqlSessionUtils.getMapper(QuizRecordMapper.class));
     private List<Persistent> dataRepository;
 
     //commit 统一进行增删改。将数据库数据全部清除，并将repository中的数据克隆回数据库

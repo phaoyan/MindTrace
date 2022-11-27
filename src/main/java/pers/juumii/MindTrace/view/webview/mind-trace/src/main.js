@@ -5,8 +5,11 @@ import 'element-plus/dist/index.css'
 import './assets/reset.css'
 import router from './router/index.js'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import {init} from '@/js/init'
 
 const app = createApp(App)
+
+init()
 
 // element-plus icon
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

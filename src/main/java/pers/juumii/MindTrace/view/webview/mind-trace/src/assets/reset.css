@@ -44,6 +44,25 @@ table {
 	border-spacing: 0;
 }
 
+
+/* Element */
+.el-textarea__inner{
+	box-shadow: none;
+	outline: none;
+	border: none;
+	resize: none;
+}
+.el-textarea__inner:focus{
+	border: none;
+	box-shadow: none;
+}
+.el-textarea__inner:hover{
+	border: none;
+	box-shadow: none;
+}
+
+
+
 /* DIY */
 .clear-input{
     background: none;
@@ -55,6 +74,11 @@ table {
 }
 .input-100{
 	width: 100%;
+}
+
+textarea{
+	border:none;
+	outline: none;
 }
 
 .length-50{
@@ -73,8 +97,8 @@ table {
 	padding-bottom: 2vh;
 }
 
-.icon-button{
-    cursor: pointer;
+.block{
+	display: block;
 }
 
 .space-between{
@@ -82,7 +106,19 @@ table {
 	justify-content: space-between;
 }
 
+.row-reverse{
+	display: flex;
+	flex-direction: row-reverse;
+}
+
 .vertical-center{
 	margin-top: auto;
     margin-bottom: auto;
+}
+
+.icon-button{
+	cursor: pointer;
+}
+.icon-button:hover{
+	color:  #a0cfff;
 }

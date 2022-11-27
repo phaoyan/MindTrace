@@ -1,17 +1,18 @@
 package pers.juumii.MindTrace.model.service.quiz.generator;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.QuizCard;
 import pers.juumii.MindTrace.model.service.ktree.KTree;
-import pers.juumii.MindTrace.utils.MathUtils;
+import pers.juumii.MindTrace.utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 @Service
+@Qualifier("RandomQuizGenerator")
 public class RandomQuizGenerator extends QuizGenerator{
 
     @Autowired
@@ -21,9 +22,17 @@ public class RandomQuizGenerator extends QuizGenerator{
 
     @Override
     public List<QuizCard> quizzes() {
+        if(kTree.getRoot() == null)
+            return new ArrayList<>();
         List<QuizCard> res = new ArrayList<>();
-        List<Integer> indexes = MathUtils.randomIndexes(0, quizRepository.size(), scale);
-        indexes.forEach(index -> res.add(quizRepository.get(index)));
+
+        Stack<QuizCard> quizStack = DataUtils.randomStackOf(kTree.getQuizCards());
+        int restScale = scale;
+        while (!quizStack.isEmpty() && restScale > 0){
+            QuizCard cur = quizStack.pop();
+            res.add(cur);
+            restScale -= cur.getScale() == 0 ? 1 : cur.getScale();
+        }
         return res;
     }
 }

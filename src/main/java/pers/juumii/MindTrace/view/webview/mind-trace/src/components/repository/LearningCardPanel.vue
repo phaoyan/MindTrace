@@ -1,9 +1,8 @@
 <script setup>
-import {inject} from 'vue'
+import data from '@/js/data'
+import request from '@/js/request';
+import operation from '@/js/operation'
 
-const data = inject('data')
-const operation = inject('operation')
-const getProtoType = inject('getProtoType')
 
 </script>
 
@@ -11,18 +10,18 @@ const getProtoType = inject('getProtoType')
     <el-container direction="vertical">
         <el-card 
         class="learning-card"
-        v-for="card in data.selectedKNode.value.data.learningCards" :key="card">
+        v-for="card in data.selectedKNode.data.learningCards" :key="card">
             <template #header>
                 <div class="header-box space-between">
                     <input 
                     class="clear-input input-80" 
                     v-model="card.description"
-                    @change="()=>operation.updateKNode(data.selectedKNode.value)"/>
+                    @change="()=>operation.updateSelectedKNode()"/>
                     <el-button 
                     @click="()=>{
                         //使用splice删除这张卡片
-                        data.selectedKNode.value.data.learningCards.splice(data.selectedKNode.value.data.learningCards.indexOf(card),1)
-                        operation.updateKNode(data.selectedKNode.value)
+                        data.selectedKNode.data.learningCards.splice(data.selectedKNode.data.learningCards.indexOf(card),1)
+                        operation.updateSelectedKNode()
                     }">
                     <el-icon><Delete /></el-icon>
                     </el-button>
@@ -30,10 +29,12 @@ const getProtoType = inject('getProtoType')
             </template>
 
             <div class="content-box space-between">
-                <input 
+                <el-input 
+                type="textarea"
+                autosize
                 class="clear-input input-80"
                 v-model="card.resource"
-                @change="()=>operation.updateKNode(data.selectedKNode.value)"/>
+                @change="()=>operation.updateSelectedKNode()"/>
             </div>
         </el-card>
         <el-card class="add-card">
@@ -41,11 +42,11 @@ const getProtoType = inject('getProtoType')
             class="icon-button" 
             size="150%"
             @click="async()=>{
-                await getProtoType('learningCard').then(e=>{
-                    e.knowledgeId = data.selectedKNode.value.data.id
-                    data.selectedKNode.value.data.learningCards.push(e)
+                await request.getProtoType('learningCard').then(e=>{
+                    e.knowledgeId = data.selectedKNode.data.id
+                    data.selectedKNode.data.learningCards.push(e)
                 })
-                operation.updateKNode(data.selectedKNode.value)
+                operation.updateSelectedKNode()
             }">
             <Plus />
             </el-icon>
@@ -53,7 +54,7 @@ const getProtoType = inject('getProtoType')
     </el-container>
 </template>
 
-<style lang="less">
+<style scoped>
 .learning-card{
     margin-bottom: 2vh;
 }

@@ -25,6 +25,9 @@ public class KnowledgeBasedQuizGenerator extends QuizGenerator{
 
     @Override
     public List<QuizCard> quizzes() {
+        if(kTree.getRoot() == null)
+            return new ArrayList<>();
+        List<QuizCard> quizRepository = kTree.getQuizCards();
         List<QuizCard> res = new ArrayList<>();
         quizRepository.forEach(quizCard ->
             res.addAll(range.querySubKNode(quizCard.getKnowledgeId()).getData().getQuizCards()));

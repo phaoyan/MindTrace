@@ -1,47 +1,51 @@
 package pers.juumii.MindTrace.model.service.ktree;
 
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.Knowledge;
 import pers.juumii.MindTrace.utils.IOUtils;
 import pers.juumii.MindTrace.utils.JsonUtils;
 import pers.juumii.MindTrace.utils.Paths;
-import pers.juumii.MindTrace.utils.SpringUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
 public class KTreeJsonLoader implements KTreeLoader{
 
-    private final String indexSrc;
     private final String dataDir;
+    private final String backupDir;
     @Getter
-    private final List<String> resourceNames;
+    private final List<String> resourceNames = new ArrayList<>();
     private String selectedResourceName;
 
     @Autowired
-    @SuppressWarnings("unchecked")
     public KTreeJsonLoader(Paths paths) {
-        indexSrc = paths.getKTreeIndexRoot();
-        resourceNames = JsonUtils.readJson(IOUtils.readFile(paths.getKTreeIndexFile()), ArrayList.class);
-        if (resourceNames != null)
-            selectedResourceName = resourceNames.get(0);
+        Collection<File> sourceDataFiles = FileUtils.listFiles(new File(paths.getJsonDataRoot()), null, false);
+        sourceDataFiles.forEach(file -> resourceNames.add(file.getName().replace(".json","")));
+        selectedResourceName = resourceNames.get(0);
         dataDir = paths.getJsonDataRoot();
+        backupDir = paths.getJsonBackupRoot();
     }
 
     @Override
     public void load(KTree kTree) {
+        if(selectedResourceName == null)
+            return;
         KNode root = JsonUtils.readJson(IOUtils.readFile(new File(getPath(selectedResourceName))), KNode.class);
         kTree.setRoot(root);
     }
 
     @Override
     public void synchronize(KTree kTree) {
-        IOUtils.writeFile(new File(indexSrc), JsonUtils.toJson(resourceNames));
+        if(selectedResourceName == null)
+            return;
+        IOUtils.copyFile(new File(getPath(selectedResourceName)), new File(backupDir + selectedResourceName + LocalDateTime.now().getNano() + ".json"));
         IOUtils.writeFile(new File(getPath(selectedResourceName)), JsonUtils.toJson(kTree.getRoot()));
         System.out.println("data synchronized: " + selectedResourceName);
     }
@@ -50,7 +54,6 @@ public class KTreeJsonLoader implements KTreeLoader{
     public void create(String name){
         if(!resourceNames.contains(name))
             resourceNames.add(name);
-        IOUtils.writeFile(new File(indexSrc), JsonUtils.toJson(resourceNames));
 
         KNode root = new KNode();
         Knowledge knowledge = new Knowledge();
@@ -65,11 +68,8 @@ public class KTreeJsonLoader implements KTreeLoader{
 
     public void delete(String name){
         resourceNames.remove(name);
-        IOUtils.writeFile(new File(indexSrc), JsonUtils.toJson(resourceNames));
-        if(selectedResourceName.equals(name)){
-            selectedResourceName = resourceNames.get(0);
-            load(SpringUtils.getBean(KTree.class));
-        }
+        IOUtils.deleteFile(new File(getPath(name)));
+        selectedResourceName = null;
         System.out.println("KTree deleted : "+name);
     }
 
@@ -81,7 +81,6 @@ public class KTreeJsonLoader implements KTreeLoader{
     @Override
     public void alterCurrentName(String newName) {
         resourceNames.set(resourceNames.indexOf(selectedResourceName), newName);
-        IOUtils.writeFile(new File(indexSrc), JsonUtils.toJson(resourceNames));
         IOUtils.renameFile(new File(getPath(selectedResourceName)), new File(getPath(newName)));
         selectedResourceName = newName;
     }

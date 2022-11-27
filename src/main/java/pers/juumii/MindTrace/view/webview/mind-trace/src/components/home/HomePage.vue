@@ -1,17 +1,17 @@
 <script setup>
-import {ref, inject, watch} from 'vue'
+import {ref} from 'vue'
 import QuizTask from './QuizTask.vue'
+import data from '@/js/data'
+import request from '@/js/request'
 
 const emits = defineEmits(['changePage'])
-
-const data = inject('data')
-const operation = inject('operation')
 
 // 用于让el-select在选中某项后显示
 const value = ref('')
 
-</script>
 
+const mainPageSwitch = ref(0)
+</script>
 
 <template>
     <el-container direction="vertical">
@@ -20,9 +20,9 @@ const value = ref('')
             class="kTree-select"
             v-model="value"
             default-first-option
-            @change="(option)=>operation.useKTree(option)">
+            @change="(option)=>request.useKTree(option)">
                 <el-option
-                v-for="option in data.kTreeList.value" :key="option"
+                v-for="option in data.kTreeList" :key="option"
                 :label="option"
                 :value="option"/>
             </el-select>
@@ -31,16 +31,16 @@ const value = ref('')
                 <el-icon><Menu /></el-icon>
             </el-button>
             <el-button
-            @click="()=>{operation.createKTree(); emits('changePage')}">
+            @click="()=>{request.createKTree()}">
                 <el-icon><Plus /></el-icon>
             </el-button>
             <el-button
-            @click="()=>{operation.removeKTree()}">
+            @click="()=>{request.removeKTree(); value = ''}">
                 <el-icon><Delete/></el-icon>
             </el-button>
         </div>
         <el-divider/>
-        <QuizTask />
+        <QuizTask/>
     </el-container>
 </template>
 

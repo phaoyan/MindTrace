@@ -1,18 +1,10 @@
 package pers.juumii.MindTrace.model.service.general;
 
-import com.google.gson.Gson;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import pers.juumii.MindTrace.SpringConfig;
-import pers.juumii.MindTrace.utils.Paths;
 import pers.juumii.MindTrace.utils.SpringUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -22,22 +14,23 @@ public class LinkOpener {
     private String defaultSearchEngine;
     private Map<String, String> abbrMap;
 
-    @SuppressWarnings("unchecked")
     @Autowired
-    public LinkOpener(Paths paths){
-        try {
-            String jsonString = FileUtils.readFileToString(paths.getLinkOpenerFile(), StandardCharsets.UTF_8);
-            abbrMap = new Gson().fromJson(jsonString, HashMap.class);
-            defaultSearchEngine = abbrMap.get("defaultSearchEngine");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @SuppressWarnings("unchecked")
+    public LinkOpener(Settings settings){
+        abbrMap = (Map<String ,String>)settings.query("localLinks");
+        defaultSearchEngine = abbrMap.get("defaultSearchEngine");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void load() {
+        abbrMap = (Map<String, String>) SpringUtils.getBean(Settings.class).query("localLinks");
+        defaultSearchEngine = abbrMap.get("defaultSearchEngine");
     }
 
     public void openLink(String rawUrl) throws IOException {
+        load();
         String valid = check(rawUrl);
         Runtime.getRuntime().exec("cmd /c start " + valid);
-
     }
 
     private String check(String rawUrl) {
@@ -53,11 +46,5 @@ public class LinkOpener {
         String filePathRegex = "[a-zA-Z]:[(\\\\)/].*?";
         String websiteRegex = "https?://.*?";
         return Pattern.matches(filePathRegex, rawUrl) || Pattern.matches(websiteRegex, rawUrl);
-    }
-
-    public static void main(String[] args) throws IOException {
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
-        LinkOpener opener = ctx.getBean(LinkOpener.class);
-        opener.openLink("BACKs");
     }
 }

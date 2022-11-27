@@ -1,22 +1,21 @@
 <script setup>
-import {ref, inject, watch} from "vue"
+import {ref, watch} from "vue"
+import data from '@/js/data'
+import request from '@/js/request'
+import operation from '@/js/operation'
 
 const emits = defineEmits(['changePage'])
 
-const data = inject('data')
-const operation = inject('operation')
-const getProtoType = inject('getProtoType')
-
-const options = ref([])
+let options = ref()
 const cascaderProps = {
     checkStrictly: true
 }
-
-watch(data.folderUpdate, ()=>{
-    options.value = renderOptions([data.kRoot.value])
+watch(data, ()=>{
+    options.value = renderOptions([data.kRoot])
 })
 
 const renderOptions = (kroots)=>{
+    // console.log("render options ... ")
     let options = []
     for(let index in kroots){
         let knode = kroots[index]
@@ -33,28 +32,29 @@ const renderOptions = (kroots)=>{
 
 const addKNode = async ()=>{
     let kNode
-    await getProtoType('kNode').then(e=>kNode = e)
-    kNode.data.superKnowledgeId = data.selectedKNode.value.data.id
-    data.selectedKNode.value.subKNodes.push(kNode)
-    operation.updateKNode(data.selectedKNode.value)
-    options.value = renderOptions([data.kRoot.value])
+    await request.getProtoType('kNode').then(e=>kNode = e)
+    kNode.data.superKnowledgeId = data.selectedKNode.data.id
+    data.selectedKNode.subKNodes.push(kNode)
+    await operation.updateSelectedKNode()
+    console.log("addKNode: ",data.kRoot)
+    options.value = renderOptions([data.kRoot])
 }
 
 const removeKNode = async ()=>{
-    let tempId = data.selectedKNode.value.data.id
-    data.selectedIndexes.value.pop()
-    operation.updateSelectedIndexes(data.selectedIndexes.value)
-    for(let i = 0; i < data.selectedKNode.value.subKNodes.length; i ++){
-        if(tempId == data.selectedKNode.value.subKNodes[i].data.id){
-            data.selectedKNode.value.subKNodes.splice(i,1)
+    let tempId = data.selectedKNode.data.id
+    data.selectedIndexes.pop()
+    operation.updateSelectedIndexes(data.selectedIndexes)
+    for(let i = 0; i < data.selectedKNode.subKNodes.length; i ++){
+        if(tempId == data.selectedKNode.subKNodes[i].data.id){
+            data.selectedKNode.subKNodes.splice(i,1)
         }
     }
-    operation.updateKNode(data.selectedKNode.value)
-    options.value = renderOptions([data.kRoot.value])
+    operation.updateKNode(data.selectedKNode)
+    options.value = renderOptions([data.kRoot])
 }
 
 const saveData = async ()=>{
-    operation.saveData()
+    request.saveData()
 }
 
 
@@ -65,8 +65,8 @@ const saveData = async ()=>{
         <div class="left">
             <input 
             class="clear-input title length-50" 
-            v-model="data.selectedKTree.value"
-            @change="()=>operation.updateSelectedKTreeName()"/>
+            v-model="data.selectedKTree"
+            @change="()=>request.updateSelectedKTreeName()"/>
             <el-button 
             class="add-sub-knowledge-button"
             @click="()=>addKNode()">
@@ -92,11 +92,11 @@ const saveData = async ()=>{
     <el-scrollbar id="kpath-scroll">
         <el-cascader-panel 
         id="kpath" 
+        v-model="data.selectedIndexes"
         :options="options"
         :props="cascaderProps"
         @change="selected=>{operation.updateSelectedIndexes(selected)}"/>
     </el-scrollbar>
-    
 </template>
 
 <style lang="less" scoped>

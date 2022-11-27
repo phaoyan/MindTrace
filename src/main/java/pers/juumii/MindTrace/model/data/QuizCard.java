@@ -1,5 +1,10 @@
 package pers.juumii.MindTrace.model.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -8,6 +13,7 @@ import pers.juumii.MindTrace.model.service.ktree.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
 import pers.juumii.MindTrace.utils.SpringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +22,11 @@ import java.util.List;
 @NoArgsConstructor
 public class QuizCard implements Linkable{
 
-    private int id, knowledgeId;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime establishTime;
+    private int id, knowledgeId, scale;
     private String description, front, back;
     private List<QuizRecord> quizRecords = new ArrayList<>();
 
@@ -27,6 +37,8 @@ public class QuizCard implements Linkable{
         res.setFront("");
         res.setBack("");
         res.setDescription("");
+        res.setEstablishTime(LocalDateTime.now());
+        res.setScale(1);
         return res;
     }
 

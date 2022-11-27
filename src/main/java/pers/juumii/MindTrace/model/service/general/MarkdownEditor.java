@@ -2,12 +2,9 @@ package pers.juumii.MindTrace.model.service.general;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.utils.Paths;
-import pers.juumii.MindTrace.utils.SpringUtils;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

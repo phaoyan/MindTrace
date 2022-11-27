@@ -1,8 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+
+
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -10,6 +13,8 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 async function createWindow() {
+  // Menu.setApplicationMenu(null)
+
   // Create the browser window.
   const win = new BrowserWindow({
     width: 800,

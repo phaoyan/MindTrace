@@ -2,9 +2,7 @@ package pers.juumii.MindTrace.controller;
 
 
 import org.springframework.web.bind.annotation.*;
-import pers.juumii.MindTrace.model.data.Knowledge;
-import pers.juumii.MindTrace.model.data.LearningCard;
-import pers.juumii.MindTrace.model.data.QuizCard;
+import pers.juumii.MindTrace.model.data.*;
 import pers.juumii.MindTrace.model.service.ktree.KTree;
 import pers.juumii.MindTrace.model.service.ktree.KNode;
 import pers.juumii.MindTrace.utils.ConsoleUtils;
@@ -42,6 +40,8 @@ public class KNodeController {
             case "knowledge" -> JsonUtils.toJson(Knowledge.protoType());
             case "learningCard" -> JsonUtils.toJson(LearningCard.protoType());
             case "quizCard" -> JsonUtils.toJson(QuizCard.protoType());
+            case "quizRecord" -> JsonUtils.toJson(QuizRecord.protoType());
+            case "learningRecord" -> JsonUtils.toJson(LearningRecord.protoType());
             default -> "";
         };
     }

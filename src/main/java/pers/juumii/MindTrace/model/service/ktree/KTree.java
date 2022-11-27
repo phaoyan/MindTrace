@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import pers.juumii.MindTrace.model.data.LearningCard;
 import pers.juumii.MindTrace.model.data.QuizCard;
 import pers.juumii.MindTrace.utils.DataUtils;
 
@@ -56,6 +57,22 @@ public class KTree {
         int res = 0;
         for(KNode kNode: root.queryKNodeBeneath())
             res += kNode.getData().getLearningCards().size();
+        return res;
+    }
+
+    public int quizRecordSize(){
+        int res = 0;
+        for(KNode kNode: root.queryKNodeBeneath())
+            for(QuizCard card: kNode.getData().getQuizCards())
+                res += card.getQuizRecords().size();
+        return res;
+    }
+
+    public int learningRecordSize(){
+        int res = 0;
+        for(KNode kNode: root.queryKNodeBeneath())
+            for(LearningCard card: kNode.getData().getLearningCards())
+                res += card.getLearningRecords().size();
         return res;
     }
 

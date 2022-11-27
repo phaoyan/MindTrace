@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pers.juumii.MindTrace.model.service.ktree.KTree;
+import pers.juumii.MindTrace.utils.SpringUtils;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +25,12 @@ public class LearningRecord implements Persistent {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime time;
 
+    public static LearningRecord protoType() {
+        LearningRecord record = new LearningRecord();
+        record.setId(SpringUtils.getBean(KTree.class).learningRecordSize());
+        record.setTime(LocalDateTime.now());
+        return record;
+    }
     public boolean isLike(String keyword) {
         return description.contains(keyword);
     }

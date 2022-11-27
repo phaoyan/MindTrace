@@ -1,11 +1,17 @@
 package pers.juumii.MindTrace.model.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import pers.juumii.MindTrace.model.service.ktree.KTree;
 import pers.juumii.MindTrace.model.service.ktree.Repository;
 import pers.juumii.MindTrace.utils.DataUtils;
 import pers.juumii.MindTrace.utils.SpringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +20,10 @@ import java.util.List;
 @ToString
 public class LearningCard implements Linkable{
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime establishTime;
     private int id, knowledgeId;
     private String description, resource;
     private List<LearningRecord> learningRecords;
@@ -40,6 +50,8 @@ public class LearningCard implements Linkable{
         res.setLearningRecords(new ArrayList<>());
         res.setDescription("");
         res.setResource("");
+        res.setEstablishTime(LocalDateTime.now());
         return res;
     }
+
 }

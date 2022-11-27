@@ -3,6 +3,7 @@ package pers.juumii.MindTrace.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -27,5 +28,19 @@ public class DataUtils {
         for(T e: collection)
             if(predicate.apply(e))
                 operation.accept(e);
+    }
+
+    public static <T> Stack<T> stackOf(Collection<T> collection){
+        Stack<T> stack = new Stack<>();
+        collection.forEach(stack::push);
+        return stack;
+    }
+
+    public static <T> Stack<T> randomStackOf(Collection<T> collection){
+        ArrayList<T> ori = new ArrayList<>(collection);
+        List<Integer> randomIndexes = MathUtils.randomIndexes(0, ori.size() - 1, ori.size());
+        Stack<T> stack = new Stack<>();
+        randomIndexes.forEach(index -> stack.push(ori.get(index)));
+        return stack;
     }
 }

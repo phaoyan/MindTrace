@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pers.juumii.MindTrace.model.service.ktree.KTree;
+import pers.juumii.MindTrace.utils.SpringUtils;
 
 import java.time.LocalDateTime;
 
@@ -26,5 +28,12 @@ public class QuizRecord implements Persistent {
 
     public boolean isLike(String keyword) {
         return description.contains(keyword);
+    }
+
+    public static QuizRecord protoType() {
+        QuizRecord record = new QuizRecord();
+        record.setId(SpringUtils.getBean(KTree.class).quizRecordSize());
+        record.setTime(LocalDateTime.now());
+        return record;
     }
 }
