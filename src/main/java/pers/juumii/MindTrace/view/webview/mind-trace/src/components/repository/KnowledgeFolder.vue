@@ -7,9 +7,6 @@ import operation from '@/js/operation'
 const emits = defineEmits(['changePage'])
 
 let options = ref()
-const cascaderProps = {
-    checkStrictly: true
-}
 watch(data, ()=>{
     options.value = renderOptions([data.kRoot])
 })
@@ -33,36 +30,31 @@ const renderOptions = (kroots)=>{
 const addKNode = async ()=>{
     let kNode
     await request.getProtoType('kNode').then(e=>kNode = e)
-    kNode.data.superKnowledgeId = data.selectedKNode.data.id
-    data.selectedKNode.subKNodes.push(kNode)
+    kNode.data.superKnowledgeId = operation.getSelectedKNode().data.id
+    operation.getSelectedKNode().subKNodes.push(kNode)
     await operation.updateSelectedKNode()
     console.log("addKNode: ",data.kRoot)
     options.value = renderOptions([data.kRoot])
 }
 
 const removeKNode = async ()=>{
-    let tempId = data.selectedKNode.data.id
-    data.selectedIndexes.pop()
-    operation.updateSelectedIndexes(data.selectedIndexes)
-    for(let i = 0; i < data.selectedKNode.subKNodes.length; i ++){
-        if(tempId == data.selectedKNode.subKNodes[i].data.id){
-            data.selectedKNode.subKNodes.splice(i,1)
+    let tempId = operation.getSelectedKNode().data.id
+    data.Repository.selectedIndexes.pop()
+    operation.updateSelectedIndexes(data.Repository.selectedIndexes)
+    for(let i = 0; i < operation.getSelectedKNode().subKNodes.length; i ++){
+        if(tempId == operation.getSelectedKNode().subKNodes[i].data.id){
+            operation.getSelectedKNode().subKNodes.splice(i,1)
         }
     }
-    operation.updateKNode(data.selectedKNode)
+    operation.updateKNode(operation.getSelectedKNode())
     options.value = renderOptions([data.kRoot])
 }
-
-const saveData = async ()=>{
-    request.saveData()
-}
-
 
 </script>
 
 <template>
-    <div class="header space-between">
-        <div class="left">
+    <div class="space-between" style="margin-top:2vh">
+        <div class="left" style="display:flex">
             <input 
             class="clear-input title length-50" 
             v-model="data.selectedKTree"
@@ -78,9 +70,9 @@ const saveData = async ()=>{
                 <el-icon><Delete /></el-icon>
             </el-button>
         </div>
-        <div class="right">
+        <div class="right" style="margin-right:2vw">
             <el-button
-            @click="()=>saveData()">
+            @click="()=>request.saveData()">
                 <el-icon><FolderChecked /></el-icon>
             </el-button>
             <el-button
@@ -89,38 +81,13 @@ const saveData = async ()=>{
           </el-button>
         </div>
     </div>
-    <el-scrollbar id="kpath-scroll">
+    <el-scrollbar class="kpath-scroll" style="width: 100vw;">
         <el-cascader-panel 
-        id="kpath" 
-        v-model="data.selectedIndexes"
+        class="kpath" 
+        style="width:500vw; height: 20vh;"
+        v-model="data.Repository.selectedIndexes"
         :options="options"
-        :props="cascaderProps"
+        :props="{checkStrictly: true}"
         @change="selected=>{operation.updateSelectedIndexes(selected)}"/>
     </el-scrollbar>
 </template>
-
-<style lang="less" scoped>
-.header{
-    margin-top: 2vh;
-}
-.left{
-    display: flex;
-}
-.right{
-    margin-right: 2vw;
-}
-.add-sub-knowledge-button{
-    margin-bottom: 2vw;
-}
-#kpath-header{
-    height: 45vh;
-}
-#kpath-scroll{
-    width: 90vw;
-    vertical-align: middle;
-}
-#kpath{
-    width:500vw;
-    height: 30vh;
-}
-</style>

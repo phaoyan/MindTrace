@@ -1,13 +1,14 @@
 package pers.juumii.MindTrace.model.service.ktree;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pers.juumii.MindTrace.model.data.Knowledge;
 import pers.juumii.MindTrace.utils.IOUtils;
 import pers.juumii.MindTrace.utils.JsonUtils;
 import pers.juumii.MindTrace.utils.Paths;
+import pers.juumii.MindTrace.utils.SpringUtils;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -37,29 +38,31 @@ public class KTreeJsonLoader implements KTreeLoader{
     public void load(KTree kTree) {
         if(selectedResourceName == null)
             return;
-        KNode root = JsonUtils.readJson(IOUtils.readFile(new File(getPath(selectedResourceName))), KNode.class);
-        kTree.setRoot(root);
+        ObjectNode json = JsonUtils.readJson(IOUtils.readFile(new File(getPath(selectedResourceName))), ObjectNode.class);
+        kTree.setRoot(JsonUtils.readJson(JsonUtils.toJson(json.get("root")), KNode.class));
+        kTree.setConfigs(JsonUtils.readJson(JsonUtils.toJson(json.get("configs")), KTreeConfigs.class));
     }
 
     @Override
     public void synchronize(KTree kTree) {
         if(selectedResourceName == null)
             return;
+        //备份
         IOUtils.copyFile(new File(getPath(selectedResourceName)), new File(backupDir + selectedResourceName + LocalDateTime.now().getNano() + ".json"));
-        IOUtils.writeFile(new File(getPath(selectedResourceName)), JsonUtils.toJson(kTree.getRoot()));
+        //更新
+        IOUtils.writeFile(new File(getPath(selectedResourceName)), JsonUtils.toJson(kTree));
         System.out.println("data synchronized: " + selectedResourceName);
     }
 
-    //先在index中注册，然后再创建一个根节点初始化这个json
     public void create(String name){
-        if(!resourceNames.contains(name))
-            resourceNames.add(name);
+        resourceNames.add(name);
+        selectedResourceName = name;
 
-        KNode root = new KNode();
-        Knowledge knowledge = new Knowledge();
-        knowledge.setDescription("ROOT");
-        root.setData(knowledge);
-        IOUtils.writeFile(new File(getPath(name)), JsonUtils.toJson(root));
+        KTree kTree = new KTree();
+        kTree.setRoot(KNode.getDefault());
+        kTree.setConfigs(KTreeConfigs.getDefault());
+        synchronize(kTree);
+        use(name, SpringUtils.getBean(KTree.class));
     }
 
     private String getPath(String name) {

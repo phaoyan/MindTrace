@@ -16,26 +16,38 @@ public class Paths {
     private final String    resourceRoot,
                             dataRoot,
                             jsonDataRoot,
+                            imgRoot,
+                            imgVirtualRoot,
                             configRoot,
                             settingsRoot,
                             settingSchemaRoot,
                             tempMarkdownRoot,
-                            jsonBackupRoot;
+                            jsonBackupRoot,
+                            frontAppRoot;
     @Getter
     private final File      tempMarkdownFile;
 
     @Autowired
     public Paths(){
-        String general = "config.json";
+        // for deployment
+//        JsonObject generalConfigs = new Gson().fromJson(IOUtils.readFile("config.json"), JsonObject.class);
+
+        // for development
         JsonObject generalConfigs = null;
         try {
-            generalConfigs = new Gson().fromJson(IOUtils.readFile(new ClassPathResource(general).getFile()), JsonObject.class);
-        } catch (IOException e) {e.printStackTrace();}
+            generalConfigs = new Gson().fromJson(IOUtils.readFile(new ClassPathResource("config.json").getFile()), JsonObject.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         assert generalConfigs != null;
         resourceRoot = generalConfigs.get("resourceRoot").getAsString();
+        frontAppRoot = generalConfigs.get("frontAppRoot").getAsString();
         dataRoot = resourceRoot + "data/";
         configRoot = resourceRoot + "configs/";
         jsonDataRoot = dataRoot + "json/data/";
+        imgRoot = dataRoot + "img/";
+        imgVirtualRoot = "http://localhost:9090/static/img/";
         settingsRoot = configRoot + "settings.json";
         settingSchemaRoot = configRoot + "settingSchema.json";
         tempMarkdownRoot = configRoot + "tempMarkdown.md";

@@ -1,3 +1,4 @@
 {
-  "resourceRoot": "D:/learning/MindTrace/"
+  "resourceRoot": "D:/learning/MindTrace/",
+  "frontAppRoot": "D:/coding/projects/javaProjects/MindTrace/src/main/java/pers/juumii/MindTrace/view/webview/mind-trace/dist_electron/win-unpacked/mind-trace.exe"
 }

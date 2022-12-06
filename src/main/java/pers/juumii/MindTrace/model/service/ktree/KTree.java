@@ -1,33 +1,34 @@
 package pers.juumii.MindTrace.model.service.ktree;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.LearningCard;
 import pers.juumii.MindTrace.model.data.QuizCard;
-import pers.juumii.MindTrace.utils.DataUtils;
+import pers.juumii.MindTrace.utils.algorithm.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
+@Data
 @Service
 public class KTree {
 
-    @Getter
-    @Setter
+    @JsonIgnore
     private KTreeLoader loader;
-    @Getter
-    @Setter
     private KNode root;
+    private KTreeConfigs configs;
 
     @Autowired
     public KTree(@Qualifier("KTreeJsonLoader") KTreeLoader loader) {
         this.loader = loader;
         load();
     }
+
+    public KTree(){}
 
     public void load() {
         loader.load(this);
@@ -38,7 +39,7 @@ public class KTree {
         loader.synchronize(this);
     }
 
-    public KNode getKNode(int id){
+    public KNode queryKNode(long id){
         return id == 0 ? root: DataUtils.getIf(root.queryKNodeBeneath(), kNode->kNode.getData().getId() == id);
     }
 
@@ -76,7 +77,7 @@ public class KTree {
         return res;
     }
 
-    public List<QuizCard> getQuizCards(){
+    public List<QuizCard> queryQuizCards(){
         List<QuizCard> res = new ArrayList<>();
         root.queryKNodeBeneath().forEach(kNode -> res.addAll(kNode.getData().getQuizCards()));
         return res;

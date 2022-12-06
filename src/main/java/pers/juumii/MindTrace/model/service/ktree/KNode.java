@@ -3,7 +3,7 @@ package pers.juumii.MindTrace.model.service.ktree;
 import lombok.Data;
 import lombok.ToString;
 import pers.juumii.MindTrace.model.data.Knowledge;
-import pers.juumii.MindTrace.utils.DataUtils;
+import pers.juumii.MindTrace.utils.algorithm.DataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +16,6 @@ public class KNode {
     private List<KNode> subKNodes;
 
     public KNode(){
-        subKNodes = new ArrayList<>();
-    }
-    public KNode(Knowledge data) {
-        this.data = data;
         subKNodes = new ArrayList<>();
     }
 
@@ -57,5 +53,13 @@ public class KNode {
         for(KNode kNode: subKNodes)
             res += kNode.size();
         return res;
+    }
+
+    public static KNode getDefault(){
+        KNode root = new KNode();
+        Knowledge knowledge = new Knowledge();
+        knowledge.setDescription("ROOT");
+        root.setData(knowledge);
+        return root;
     }
 }

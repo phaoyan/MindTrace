@@ -1,20 +1,21 @@
 <script setup>
 import QuizCard from '../atomic/QuizCard.vue'
-import data from '@/js/data'
 import operation from '@/js/operation'
 import request from '@/js/request'
+import data from '@/js/data'
 
 
 const removeCard = (card)=>{
     //使用splice删除这张卡片
-    data.selectedKNode.data.quizCards.splice(data.selectedKNode.data.quizCards.indexOf(card),1)
+    operation.getSelectedKNode().data.quizCards.splice(operation.getSelectedKNode().data.quizCards.indexOf(card),1)
     operation.updateSelectedKNode()
 }
 
 const addCard = async()=>{
     await request.getProtoType('quizCard').then(e=>{
-        e.knowledgeId = data.selectedKNode.data.id
-        data.selectedKNode.data.quizCards.push(e)
+        e.knowledgeId = operation.getSelectedKNode().data.id
+        operation.getSelectedKNode().data.quizCards.push(e)
+        console.log("addCard", operation.getSelectedKNode().data.quizCards)
     })
     operation.updateSelectedKNode()
 }
@@ -23,8 +24,12 @@ const addCard = async()=>{
 
 <template>
     <el-container direction="vertical">
-        <QuizCard v-for="card in data.selectedKNode.data.quizCards" :key="card" :card="card" style="margin-bottom:2vh">
+        <QuizCard 
+        v-for="card in operation.getSelectedKNode().data.quizCards" :key="card" 
+        :id="card.id" 
+        style="margin-bottom:2vh">
             <template v-slot:general-plugin>
+                <el-icon class="icon-button vertical-center" style="margin-right:5vw" @click="()=>operation.shearSelectedQuizCard(card.id)"><Scissor /></el-icon>
                 <el-popover
                     placement="bottom"
                     trigger="hover"
@@ -47,18 +52,13 @@ const addCard = async()=>{
                     <el-form-item label="scale:">
                         <el-slider 
                         v-model="card.scale" 
-                        :step="1" :min="1" :max="5"
+                        :step="1" :min="1" :max="15"
                          @change="()=>operation.updateKNodeById(card.knowledgeId)"/>
                     </el-form-item>
                 </el-popover>
-            </template>
-            <template v-slot:front-plugin>
-                <el-button @click="()=>removeCard(card)">
-                    <el-icon><Delete /></el-icon>
-                </el-button>
-            </template>
-            <template v-slot:back-plugin>
-                <el-button @click="()=>removeCard(card)">
+                <el-rate style="margin-left:5vw" v-model="card.rate" allow-half  @change="()=>operation.updateKNodeById(card.knowledgeId)"/>
+
+                <el-button @click="()=>removeCard(card)" style="margin-left:5vw">
                     <el-icon><Delete /></el-icon>
                 </el-button>
             </template>
@@ -67,10 +67,15 @@ const addCard = async()=>{
 
         <el-card class="space-between">
             <el-icon 
-            class="icon-button" 
-            size="150%"
-            @click="()=>addCard()">
-            <Plus />
+                class="icon-button" size="150%" style="margin-right:5vw"
+                @click="()=>addCard()">
+                <Plus />
+            </el-icon>
+            <el-icon
+                v-if="data.Repository.quizCardToBeShifted != undefined"
+                class="icon-button" size="150%"
+                @click="()=>operation.shiftSelectedQuizCard()">
+                <Scissor/>
             </el-icon>
         </el-card>
     </el-container>

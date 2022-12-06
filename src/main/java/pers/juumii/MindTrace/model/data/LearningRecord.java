@@ -8,8 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pers.juumii.MindTrace.model.service.ktree.KTree;
-import pers.juumii.MindTrace.utils.SpringUtils;
+import pers.juumii.MindTrace.utils.algorithm.MathUtils;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +17,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LearningRecord implements Persistent {
 
-    private int id, cardId, completion;
+    private long id, cardId;
+    //一轮完整的复习对completion的贡献为1，多轮复习可能使得completion>1
+    private double completion;
     private String description;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -27,13 +28,8 @@ public class LearningRecord implements Persistent {
 
     public static LearningRecord protoType() {
         LearningRecord record = new LearningRecord();
-        record.setId(SpringUtils.getBean(KTree.class).learningRecordSize());
+        record.setId(MathUtils.unique());
         record.setTime(LocalDateTime.now());
         return record;
     }
-    public boolean isLike(String keyword) {
-        return description.contains(keyword);
-    }
-
-
 }

@@ -27,7 +27,7 @@ public class SpringUtils implements ApplicationContextAware {
         return applicationContext.getBean(clazz);
     }
 
-    public static <T> List<T> getSubclasses(Class<T> cl){
+    public static <T> List<T> getBeans(Class<T> cl){
         Map<String, T> beansOfType = applicationContext.getBeansOfType(cl);
         return new ArrayList<>(beansOfType.values());
     }

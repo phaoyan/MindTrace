@@ -30,7 +30,8 @@ public class LinkOpener {
     public void openLink(String rawUrl) throws IOException {
         load();
         String valid = check(rawUrl);
-        Runtime.getRuntime().exec("cmd /c start " + valid);
+        //兼容路径空格
+        Runtime.getRuntime().exec("cmd /c start " + "\"\" \"" + valid + "\"");
     }
 
     private String check(String rawUrl) {

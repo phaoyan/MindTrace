@@ -61,6 +61,13 @@ table {
 	box-shadow: none;
 }
 
+.el-cascader-menu__wrap.el-scrollbar__wrap{
+	height:100%;
+}
+
+.el-text-color{
+	color:#606266;
+}
 
 
 /* DIY */
@@ -74,6 +81,18 @@ table {
 }
 .input-100{
 	width: 100%;
+}
+
+.large-font {
+    font-size: 150%;
+    font-weight: lighter;
+    font-style: italic;
+}
+
+.middle-font{
+	font-size: 120%;
+    font-weight: lighter;
+    font-style: italic;
 }
 
 textarea{
@@ -106,6 +125,11 @@ textarea{
 	justify-content: space-between;
 }
 
+.space-evenly{
+	display: flex;
+	justify-content: space-evenly;
+}
+
 .row-reverse{
 	display: flex;
 	flex-direction: row-reverse;
@@ -120,5 +144,36 @@ textarea{
 	cursor: pointer;
 }
 .icon-button:hover{
-	color:  #a0cfff;
+	color:  #a0cfff !important;
+}
+
+
+.header-info{
+    margin: 2vh auto;
+    text-align: center;
+    font-size:200%; 
+    font-weight:300; 
+    font-style:oblique; 
+    color: #79bbff
+}
+
+.card-margin{
+    margin: 2vh 4vw;
+}
+
+.margin-right{
+	margin-right: 2vw;
+}
+
+.margin-horizontal{
+	margin-left: 1vw;
+	margin-right: 1vw;
+}
+
+.block{
+	display:block;
+}
+
+.inline-block{
+	display: inline-block;
 }
