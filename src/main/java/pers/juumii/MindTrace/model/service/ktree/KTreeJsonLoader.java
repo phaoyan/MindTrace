@@ -29,7 +29,8 @@ public class KTreeJsonLoader implements KTreeLoader{
     public KTreeJsonLoader(Paths paths) {
         Collection<File> sourceDataFiles = FileUtils.listFiles(new File(paths.getJsonDataRoot()), null, false);
         sourceDataFiles.forEach(file -> resourceNames.add(file.getName().replace(".json","")));
-        selectedResourceName = resourceNames.get(0);
+        if(!resourceNames.isEmpty())
+            selectedResourceName = resourceNames.get(0);
         dataDir = paths.getJsonDataRoot();
         backupDir = paths.getJsonBackupRoot();
     }
@@ -50,7 +51,7 @@ public class KTreeJsonLoader implements KTreeLoader{
         //备份
         IOUtils.copyFile(new File(getPath(selectedResourceName)), new File(backupDir + selectedResourceName + LocalDateTime.now().getNano() + ".json"));
         //更新
-        IOUtils.writeFile(new File(getPath(selectedResourceName)), JsonUtils.toJson(kTree));
+        IOUtils.writeFile(new File(getPath(selectedResourceName)), JsonUtils.toJsonShallowly(kTree));
         System.out.println("data synchronized: " + selectedResourceName);
     }
 
@@ -70,6 +71,8 @@ public class KTreeJsonLoader implements KTreeLoader{
     }
 
     public void delete(String name){
+        if(resourceNames.size() == 1)
+            return;
         resourceNames.remove(name);
         IOUtils.deleteFile(new File(getPath(name)));
         selectedResourceName = null;

@@ -2,36 +2,36 @@
 import QuizCard from '../atomic/QuizCard.vue'
 import RadioGroup from '../atomic/RadioGroup.vue'
 import SubpageHeader from '../atomic/SubpageHeader.vue'
-import data from '@/js/data'
-import request from '@/js/request'
-import operation from '@/js/operation'
+import {general, getProtoType, synchronizeKTreeConfigs, getQuizGeneratorPrototype, getQuizCard, getKNode, updateKNodeById} from '@/js/mirror/general'
+import { loadQuizFinished, loadQuiz } from '@/js/mirror/home/QuizTask'
 import {ref, onMounted} from 'vue'
+import { HomePage } from '@/js/mirror/home/HomePage'
+import { QuizTask, init } from '@/js/mirror/home/QuizTask'
+import { linkToKnowledge } from '@/js/mirror/repository/RepositoryPage'
 
-
-const QuizTask = data.Home.QuizTask
 
 const onCompletionSelected = async (selection, cardCopy)=>{
-    let card = operation.getQuizCard(cardCopy.id)  
+    let card = getQuizCard(cardCopy.id)  
     console.log("Selecetd Card:",card)  
 
     let completion = selection == 'difficult' ? 30: selection == 'good' ? 70: selection == 'perfect' ? 100: 0
-    await request.getProtoType('quizRecord').then(record=>{
+    await getProtoType('quizRecord').then(record=>{
         record.cardId = card.id
         record.completion = completion
         record.description = selection
         card.quizRecords.push(record)
-        console.log("quiz recorded:", card, operation.getKNode(card.knowledgeId))
+        console.log("quiz recorded:", card, getKNode(card.knowledgeId))
     })
-    await operation.updateKNodeById(card.knowledgeId)
+    await updateKNodeById(card.knowledgeId)
     for(let i in QuizTask.quizCards)
         if(QuizTask.quizCards[i].id == card.id)
             QuizTask.quizCards.splice(i,1)
-    await request.loadQuizFinished()
+    await loadQuizFinished()
 }
 
 
 
-onMounted(()=>{request.loadQuiz(); request.loadQuizFinished()})
+onMounted(()=>{init()})
 
 // Settings / QuizTask
 const pageSelected = ref('QuizTask')
@@ -41,8 +41,8 @@ const pageSelected = ref('QuizTask')
 <template>
     <el-container direction="vertical">
         <SubpageHeader
-        @pageLeft="()=>data.Home.pageSelected = 'LearningTask'"
-        @pageRight="()=>data.Home.pageSelected = 'MindTrace'">
+        @pageLeft="()=>HomePage.pageSelected= 'QuizTrace'"
+        @pageRight="()=>HomePage.pageSelected= 'LearningTask'">
             <div class="header-info" v-if="!QuizTask.quizIsDue">
                 Today is not Quiz Day.
             </div>
@@ -57,31 +57,31 @@ const pageSelected = ref('QuizTask')
             <el-button @click="()=>pageSelected = 'Settings'">
                 <el-icon><Setting /></el-icon>
             </el-button>
-            <el-button @click="()=>{request.loadQuiz(); pageSelected = 'QuizTask'}">
+            <el-button @click="()=>{loadQuiz(); pageSelected = 'QuizTask'}">
                 <el-icon><EditPen /></el-icon>
             </el-button>
         </div>
         <el-scrollbar style="height:70vh">
             <div class="settings" v-if="pageSelected == 'Settings'">
                 <br/>
-                <el-form v-model="data.kTreeConfigs" :inline="true" style="width:80vw; margin: 0 auto">
+                <el-form v-model="general.kTreeConfigs" :inline="true" style="width:80vw; margin: 0 auto">
                     <el-form-item label="Period(days)">
                         <el-input-number 
-                        v-model="data.kTreeConfigs.quizSchedule" 
+                        v-model="general.kTreeConfigs.quizSchedule" 
                         :min="1" :max="30" 
-                        @change="()=>request.synchronizeKTreeConfigs()" 
+                        @change="()=>synchronizeKTreeConfigs()" 
                         size="small"/>
                     </el-form-item>
                     <el-form-item label="Scale(mins)">
                         <el-input-number 
-                        v-model="data.kTreeConfigs.quizScale" 
+                        v-model="general.kTreeConfigs.quizScale" 
                         :min="1" :max="500" 
-                        @change="()=>request.synchronizeKTreeConfigs()" 
+                        @change="()=>synchronizeKTreeConfigs()" 
                         size="small"/>
                     </el-form-item>
                     <el-form-item>
                         <el-tooltip
-                        v-if="!data.Home.QuizTask.quizIsDue"
+                        v-if="!QuizTask.quizIsDue"
                         content="reset time anchor" effect="light">
                             <el-icon 
                             class="icon-button" size="150%" style="color:#79bbff"
@@ -89,19 +89,19 @@ const pageSelected = ref('QuizTask')
                                 let now = new Date(Date.now())
                                 //µ÷ÕûÊ±²î
                                 now.setHours(now.getHours() + 8)
-                                data.kTreeConfigs.timeAnchor = now.toISOString().split('.')[0]
-                                request.synchronizeKTreeConfigs()
+                                general.kTreeConfigs.timeAnchor = now.toISOString().split('.')[0]
+                                synchronizeKTreeConfigs()
                             }"><RefreshRight /></el-icon>
                         </el-tooltip>
                     </el-form-item>
                     <el-divider/>
-                    <el-form v-model="data.kTreeConfigs" :inline="true" style="width:80vw; margin: 0 auto" label-position="top">
+                    <el-form v-model="general.kTreeConfigs" :inline="true" style="width:80vw; margin: 0 auto" label-position="top">
                         <el-form-item label="Quiz Generator" >
                             <el-radio-group 
-                            v-model="data.kTreeConfigs.quizGenerator.type"
+                            v-model="general.kTreeConfigs.quizGenerator.type"
                             @change="async ()=>{
-                                await request.getQuizGeneratorPrototype(data.kTreeConfigs.quizGenerator.type).then(e =>data.kTreeConfigs.quizGenerator.configs=e)
-                                await request.synchronizeKTreeConfigs()}"
+                                await getQuizGeneratorPrototype(general.kTreeConfigs.quizGenerator.type).then(e =>general.kTreeConfigs.quizGenerator.configs=e)
+                                await synchronizeKTreeConfigs()}"
                             style="width:20vw">
                                 <el-radio label="RandomQuizGenerator">Random Quiz</el-radio>
                                 <el-radio label="HorizontalQuizGenerator" >Horizontal Quiz</el-radio>
@@ -113,17 +113,17 @@ const pageSelected = ref('QuizTask')
                         <el-form-item label="Configs" style="width:40vw; margin-left:3vw">
                             <div 
                             class="compositional-quiz-wrapper" style="width:100%; margin-left:2vw"
-                            v-if="data.kTreeConfigs.quizGenerator.type=='CompositionalQuizGenerator'">
+                            v-if="general.kTreeConfigs.quizGenerator.type=='CompositionalQuizGenerator'">
                                 <div class="priority-header el-text-color">Priority</div>
                                 <div class="priority-options">
                                     <el-button 
                                     style="margin-left: 0; display: block;" text
-                                    v-for="(factor, index) in data.kTreeConfigs.quizGenerator.configs.priority" :key="factor"
+                                    v-for="(factor, index) in general.kTreeConfigs.quizGenerator.configs.priority" :key="factor"
                                     @click="()=>{
-                                        let temp = data.kTreeConfigs.quizGenerator.configs.priority[0]
-                                        data.kTreeConfigs.quizGenerator.configs.priority[0] = data.kTreeConfigs.quizGenerator.configs.priority[index]
-                                        data.kTreeConfigs.quizGenerator.configs.priority[index] = temp
-                                        request.synchronizeKTreeConfigs()
+                                        let temp = general.kTreeConfigs.quizGenerator.configs.priority[0]
+                                        general.kTreeConfigs.quizGenerator.configs.priority[0] = general.kTreeConfigs.quizGenerator.configs.priority[index]
+                                        general.kTreeConfigs.quizGenerator.configs.priority[index] = temp
+                                        synchronizeKTreeConfigs()
                                     }">
                                         ({{(index+1)}})&nbsp;{{factor == 'recordCompletionComparator' ? 'completion' : 
                                         factor == 'recordTimeComparator' ? 'time gap' :
@@ -132,19 +132,19 @@ const pageSelected = ref('QuizTask')
                                 </div>
                             </div>
                             <div class="weighted-quiz-wrapper" style="width:100%; margin-left:2vw"
-                            v-if="(data.kTreeConfigs.quizGenerator.type=='MultiBasedQuizGenerator' && data.kTreeConfigs.quizGenerator.configs.weightMap != undefined)">
+                            v-if="(general.kTreeConfigs.quizGenerator.type=='MultiBasedQuizGenerator' && general.kTreeConfigs.quizGenerator.configs.weightMap != undefined)">
                                 <div class="weight-header" style="color:#606266">Weights</div>
                                 <div class="importance-weight">
                                     <span class="margin-right el-text-color" style="display:inline-block;width:13vw">importance:</span>
-                                    <el-input-number size="small" v-model="data.kTreeConfigs.quizGenerator.configs.weightMap.rateEvaluator"/>
+                                    <el-input-number size="small" v-model="general.kTreeConfigs.quizGenerator.configs.weightMap.rateEvaluator"/>
                                 </div>
                                 <div class="completion-weight">
                                     <span class="margin-right el-text-color" style="display:inline-block;width:13vw">completion:</span>
-                                    <el-input-number size="small" v-model="data.kTreeConfigs.quizGenerator.configs.weightMap.recordCompletionEvaluator"/>
+                                    <el-input-number size="small" v-model="general.kTreeConfigs.quizGenerator.configs.weightMap.recordCompletionEvaluator"/>
                                 </div>
                                 <div class="time-gap-weight">
                                     <span class="margin-right el-text-color" style="display:inline-block;width:13vw">time gap(days):</span>
-                                    <el-input-number size="small" v-model="data.kTreeConfigs.quizGenerator.configs.weightMap.recordTimeEvaluator"/>
+                                    <el-input-number size="small" v-model="general.kTreeConfigs.quizGenerator.configs.weightMap.recordTimeEvaluator"/>
                                 </div>
                             </div>
                         </el-form-item>
@@ -166,7 +166,7 @@ const pageSelected = ref('QuizTask')
                             <el-icon 
                             class="vertical-center icon-button" 
                             style="color:#79bbff; margin-left: 14vw;" 
-                            @click="() => operation.linkToKnowledge(card.knowledgeId)"
+                            @click="() => linkToKnowledge(card.knowledgeId)"
                             size="120%"><Promotion /></el-icon>
                         </template>
                     </QuizCard>

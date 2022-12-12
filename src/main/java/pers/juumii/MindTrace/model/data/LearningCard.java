@@ -9,12 +9,11 @@ import lombok.*;
 import pers.juumii.MindTrace.utils.algorithm.MathUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @ToString
+@InstantData
 public class LearningCard implements Persistent{
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -24,13 +23,11 @@ public class LearningCard implements Persistent{
     private long id, knowledgeId;
     int scale; //minutes
     private String description, resource;
-    private List<LearningRecord> learningRecords;
 
     public static LearningCard protoType() {
         LearningCard res = new LearningCard();
         res.setId(MathUtils.unique());
         res.setKnowledgeId(-1);
-        res.setLearningRecords(new ArrayList<>());
         res.setDescription("");
         res.setResource("");
         res.setEstablishTime(LocalDateTime.now());

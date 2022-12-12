@@ -21,7 +21,7 @@ public class VerticalQuizGenerator extends QuizGenerator{
     @Override
     public List<QuizCard> quizzes(int scale, KTree kTree) {
         return QuizGenerator.quizzes(scale, kTree, repo -> {
-            Stack<KNode> randomKNodes = DataUtils.randomStackOf(kTree.getRoot().queryKNodeBeneath(), LocalDateTime.now().getDayOfYear());
+            Stack<KNode> randomKNodes = DataUtils.randomStackOf(kTree.getRoot().getKNodesBeneath(), LocalDateTime.now().getDayOfYear());
             Stack<QuizCard> res = new Stack<>();
             while (!randomKNodes.isEmpty())
                 randomKNodes.pop().getData().getQuizCards().forEach(res::push);

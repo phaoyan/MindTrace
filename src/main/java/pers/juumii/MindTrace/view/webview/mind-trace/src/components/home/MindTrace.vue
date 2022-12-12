@@ -1,82 +1,74 @@
 <script setup>
 import SubpageHeader from '../atomic/SubpageHeader.vue'
-import QuizCard from '../atomic/QuizCard.vue' 
-import data from '@/js/data'
-import request from '@/js/request'
-import operation from '@/js/operation'
-import { onMounted, ref } from 'vue'
-import { Calendar, Histogram } from '@element-plus/icons-vue'
-
-// quiz trace
-const kNodeCount = ref([])
-const quizCardCount = ref([])
-const quizCardTrace = ref([])
-const quizCardsThisPage = ref()
-const currentPage = ref(1)
-
-// general info
-const overviewMarkdown = ref("# ")
+import {onMounted, ref} from 'vue'
+import {Calendar, Histogram} from '@element-plus/icons-vue'
+import { MindTrace, init, getLearningTimeSpentOfDay, getLearningOverviewOfDay } from '@/js/mirror/home/MindTrace'
+import { HomePage } from '@/js/mirror/home/HomePage'
+import moment from 'moment'
 
 onMounted(async ()=>{
-    request.getStatistics('kNodeCount').then(e=>kNodeCount.value=e)
-    request.getStatistics('quizCardCount').then(e=>quizCardCount.value=e)
-    await request.getStatistics('quizCardsSortedByEstablishment').then(e=>{quizCardTrace.value=e})
-    quizCardsThisPage.value = quizCardTrace.value.slice((currentPage.value - 1) * 10, currentPage.value * 10)
-    request.getStatistics('overviewMarkdown').then(e=>{overviewMarkdown.value = e; console.log(overviewMarkdown.value)})
+    await init()
 })
 
-const pageSelected = ref('GeneralInfo')
 
+const calendar = ref()
+const selectDate = (val) => {
+  calendar.value.selectDate(val)
+}
 </script>
 
 <template>
     <el-container direction="vertical">
         <SubpageHeader
-        @pageLeft="()=>data.Home.pageSelected = 'QuizTask'"
-        @pageRight="()=>data.Home.pageSelected = 'LearningTask'">
-            <div class="header-info" v-if="pageSelected == 'QuizCardTrace'">Quiz Trace</div>
-            <div class="header-info" v-if="pageSelected == 'GeneralInfo'">Statistics</div>
+        @pageLeft="()=>HomePage.pageSelected = 'LearningTask'"
+        @pageRight="()=>HomePage.pageSelected = 'QuizTrace'">
+            <div class="header-info">Statistics</div>
         </SubpageHeader>
         <div class="options-row space-evenly" style="margin: auto 42vw">
-            <el-button @click="()=>pageSelected = 'GeneralInfo'">
+            <el-button @click="()=>MindTrace.pageSelected = 'GeneralInfo'">
+                <el-icon><Document /></el-icon>
+            </el-button>
+            <el-button @click="()=>MindTrace.pageSelected = 'ChartsInfo'">
                 <el-icon><Histogram /></el-icon>
             </el-button>
-            <el-button @click="()=>{request.loadQuiz(); pageSelected = 'QuizCardTrace'}">
+            <el-button @click="()=>MindTrace.pageSelected = 'CalendarInfo'">
                 <el-icon><Calendar /></el-icon>
             </el-button>
         </div>
         <el-scrollbar class="scroll" style="height:70vh; overflow: hidden;">
             <div class="trace-info-wrapper">
                 <div class="select-pages">
-                    <div class="quiz-card-trace" v-if="pageSelected == 'QuizCardTrace'">
-                        <el-timeline>
-                            <el-timeline-item
-                            v-for="quizCard in quizCardsThisPage" :key="quizCard.id"
-                            :timestamp="quizCard.establishTime.replace('T',' ')"
-                            placement="top" class="card-margin">
-                                <QuizCard :id="quizCard.id">
-                                    <template v-slot:general-plugin>
-                                            <el-icon 
-                                            class="vertical-center icon-button" 
-                                            style="color:#79bbff;margin-left:35vw" 
-                                            @click="() => operation.linkToKnowledge(quizCard.knowledgeId)"
-                                            size="130%"><Promotion /></el-icon>
-                                    </template>
-                                </QuizCard>
-                            </el-timeline-item>
-                        </el-timeline>
-                        <el-pagination
-                        class="card-margin"
-                        v-model:currentPage="currentPage"
-                        :total="quizCardTrace.length"
-                        @current-change="quizCardsThisPage = quizCardTrace.slice((currentPage - 1) * 10, currentPage * 10)"/>
+                    <div class="general-info" v-if="MindTrace.pageSelected == 'GeneralInfo'">
+                        <v-md-preview :text="MindTrace.overviewMarkdown"/>
                     </div>
-                    <div class="general-info" v-if="pageSelected == 'GeneralInfo'">
-                        <v-md-preview :text="overviewMarkdown"/>
+                    <div class="charts-info" v-if="MindTrace.pageSelected == 'ChartsInfo'">
+                        Charts Info
+                    </div>
+                    <div class="calendar-info card-margin" v-if="MindTrace.pageSelected == 'CalendarInfo'">
+                        <el-calendar ref="calendar">
+                            <template #header>
+                                <el-icon class="icon-button" @click="selectDate('prev-month')"><Back /></el-icon>
+                                <span class="el-text-color" style="font-size: 130%; font-style: oblique; font-weight: 200;">{{moment().toISOString().split('T')[0]}}</span>
+                                <el-icon class="icon-button" @click="selectDate('next-month')"><Right /></el-icon>
+                            </template>
+                            <template #date-cell="{data}">
+                                <el-popover trigger="click" placement="right-start" :width="getLearningOverviewOfDay(data.date) == undefined ? 200: 400">
+                                    <template #reference>
+                                        <div class="wrapper" style="width:100%; height:100%">
+                                            <div class="header el-text-color">{{data.date.getDate()}}</div>
+                                            <div class="info el-blue" style="text-align: center; transform: translateY(80%);">
+                                                {{getLearningTimeSpentOfDay(data.date)}}
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <v-md-preview :text="getLearningOverviewOfDay(data.date)" v-if="getLearningOverviewOfDay(data.date) != undefined"/>
+                                    <div class="no-data el-text-color large-font" v-if="getLearningOverviewOfDay(data.date) == undefined">No Data</div>
+                                </el-popover>
+                            </template>
+                        </el-calendar>
                     </div>
                 </div>
             </div>
-
         </el-scrollbar>
     </el-container>
 </template>

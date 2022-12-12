@@ -17,6 +17,7 @@ import java.util.List;
 @Data
 @ToString
 @NoArgsConstructor
+@InstantData
 public class QuizCard implements Persistent{
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)

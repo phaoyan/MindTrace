@@ -3,14 +3,17 @@ import {ref} from 'vue'
 import QuizTask from './QuizTask.vue'
 import LearningTask from './LearningTask.vue'
 import MindTrace from './MindTrace.vue'
-import data from '@/js/data'
-import request from '@/js/request'
+import QuizTrace from './QuizTrace.vue'
+import { HomePage } from '@/js/mirror/home/HomePage'
+import { general, useKTree, createKTree, removeKTree } from '@/js/mirror/general'
+import { updateSelectedIndexes } from '@/js/mirror/repository/RepositoryPage'
+import { AppVue } from '@/js/mirror/AppVue'
+
 
 const emits = defineEmits(['changePage'])
 
 // 用于让el-select在选中某项后显示
-const value = ref(data.selectedKTree)
-
+const value = ref(general.selectedKTree)
 
 </script>
 
@@ -24,32 +27,34 @@ const value = ref(data.selectedKTree)
                 v-model="value"
                 default-first-option
                 @change="(option)=>{
-                    request.useKTree(option); 
-                    data.Home.pageSelected = ''; data.Home.pageSelected = 'QuizTask'}">
+                    useKTree(option); }">
                     <el-option
-                    v-for="option in data.kTreeList" :key="option"
+                    v-for="option in general.kTreeList" :key="option"
                     :label="option"
                     :value="option"/>
                 </el-select>
                 <el-button
-                @click="emits('changePage')">
+                @click="()=>{
+                    AppVue.pageSelected='repository'
+                    updateSelectedIndexes([0])}">
                     <el-icon><Menu /></el-icon>
                 </el-button>
                 <el-button
-                @click="()=>{request.createKTree()}">
+                @click="()=>{createKTree()}">
                     <el-icon><Plus /></el-icon>
                 </el-button>
                 <el-button
-                @click="()=>{request.removeKTree(); value = ''}">
+                @click="()=>{removeKTree(); value = ''}">
                     <el-icon><Delete/></el-icon>
                 </el-button>
             </div>
         </div>
         <el-divider/>
         <div class="wrapper">
-            <QuizTask v-if="data.Home.pageSelected=='QuizTask'"/>
-            <LearningTask v-if="data.Home.pageSelected=='LearningTask'"/>
-            <MindTrace v-if="data.Home.pageSelected=='MindTrace'"/>
+            <QuizTask v-if="HomePage.pageSelected=='QuizTask'"/>
+            <LearningTask v-if="HomePage.pageSelected=='LearningTask'"/>
+            <MindTrace v-if="HomePage.pageSelected=='MindTrace'"/>
+            <QuizTrace v-if="HomePage.pageSelected=='QuizTrace'"/>
         </div>
     </el-container>
 </template>

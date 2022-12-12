@@ -10,26 +10,35 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pers.juumii.MindTrace.utils.algorithm.MathUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @ToString
 @NoArgsConstructor
+@InstantData
 public class LearningRecord implements Persistent {
 
-    private long id, cardId;
-    //一轮完整的复习对completion的贡献为1，多轮复习可能使得completion>1
-    private double completion;
+    private long id;
     private String description;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime time;
+    private LocalDateTime startTime, finishTime;
+    private List<Long> concernedKnowledgeIds = new ArrayList<>();
+
+    @InstantData
+    public Duration getDuration(){
+        return finishTime == null ? Duration.ZERO : Duration.between(startTime, finishTime);
+    }
 
     public static LearningRecord protoType() {
         LearningRecord record = new LearningRecord();
         record.setId(MathUtils.unique());
-        record.setTime(LocalDateTime.now());
+        record.setStartTime(LocalDateTime.now());
+        record.setConcernedKnowledgeIds(new ArrayList<>());
         return record;
     }
 }

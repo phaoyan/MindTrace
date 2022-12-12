@@ -11,21 +11,42 @@ public class DataUtils {
         for(T e: collection)
             if(predicate.apply(e))
                 res = e;
-
         return res;
     }
     public static  <T> List<T> getAllIf(Collection<T> collection, Function<T, Boolean> predicate){
         List<T> res = new ArrayList<>();
+        if(collection == null)
+            return res;
         for(T e: collection)
             if(predicate.apply(e))
                 res.add(e);
         return res;
     }
+    public static <T, R> List<R> destructureAll(Collection<T> collection, Function<T, R> transformation){
+        List<R> res = new ArrayList<>();
+        for(T item: collection)
+            res.add(transformation.apply(item));
+        return res;
+    }
+
     //对符合条件的数据进行某些操作，这些操作无返回值
     public static <T> void forAllIf(Collection<T> collection, Function<T, Boolean> predicate, Consumer<T> operation){
         for(T e: collection)
             if(predicate.apply(e))
                 operation.accept(e);
+    }
+
+    public static <T> boolean ifAll(Collection<T> collection, Function<T, Boolean> predicate){
+        for (T e: collection)
+            if(!predicate.apply(e))
+                return false;
+        return true;
+    }
+
+    public static <T> boolean satisfy(Collection<T> collection, Function<Collection<T>, Boolean> predicate){
+        if(collection.isEmpty())
+            return false;
+        return predicate.apply(collection);
     }
 
     public static <T> Stack<T> stackOf(Collection<T> collection){
@@ -96,4 +117,14 @@ public class DataUtils {
         }));
     }
 
+    public static <K, T> Map<K, List<T>> groupBy(Collection<T> collection, Function<T, K> assign) {
+        Map<K, List<T>> res = new HashMap<>();
+        for(T element: collection){
+            K key = assign.apply(element);
+            if(res.containsKey(key))
+                res.get(key).add(element);
+            else res.put(key, new ArrayList<>(List.of(element)));
+        }
+        return res;
+    }
 }

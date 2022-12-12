@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @ToString
 @NoArgsConstructor
+@InstantData
 public class QuizRecord implements Persistent {
 
     private long id, cardId;

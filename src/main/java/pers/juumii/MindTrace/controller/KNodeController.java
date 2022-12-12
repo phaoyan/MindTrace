@@ -21,7 +21,7 @@ public class KNodeController {
     @GetMapping("/KNode/load")
     public String loadKNode(int id){
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.getKNode", "id="+id);
-        return JsonUtils.toJson(kTree.queryKNode(id));
+        return JsonUtils.toJson(kTree.getKNode(id));
     }
 
     @SuppressWarnings("all")
@@ -29,8 +29,8 @@ public class KNodeController {
     public void synchronizeKNode(@RequestBody String kNodeJson){
         ConsoleUtils.printLocation("pers.juumii.MindTrace.controller.DataController.updateKNode", kNodeJson);
         KNode kNode = JsonUtils.readJson(kNodeJson, KNode.class);
-        kTree.queryKNode(kNode.getData().getId()).setData(kNode.getData());
-        kTree.queryKNode(kNode.getData().getId()).setSubKNodes(kNode.getSubKNodes());
+        kTree.getKNode(kNode.getData().getId()).setData(kNode.getData());
+        kTree.getKNode(kNode.getData().getId()).setSubKNodes(kNode.getSubKNodes());
     }
 
     @GetMapping("/KNode/protoType")

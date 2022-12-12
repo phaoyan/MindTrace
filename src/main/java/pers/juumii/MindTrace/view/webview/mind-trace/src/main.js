@@ -5,7 +5,7 @@ import 'element-plus/dist/index.css'
 import './assets/reset.css'
 import router from './router/index.js'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import {init} from '@/js/init'
+import {init} from '@/js/mirror/general'
 import data from '@/js/data'
 import request from'@/js/request'
 

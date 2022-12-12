@@ -3,10 +3,8 @@ package pers.juumii.MindTrace.model.service.quiz.generator;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.QuizCard;
-import pers.juumii.MindTrace.model.service.statistics.Statistics;
 import pers.juumii.MindTrace.model.service.ktree.KTree;
 import pers.juumii.MindTrace.utils.JsonUtils;
-import pers.juumii.MindTrace.utils.SpringUtils;
 import pers.juumii.MindTrace.utils.algorithm.DataUtils;
 
 import java.util.*;
@@ -33,15 +31,14 @@ public abstract class QuizGenerator {
         if(kTree.getRoot() == null)
             return new ArrayList<>();
 
-        Statistics statistics = SpringUtils.getBean(Statistics.class);
         List<QuizCard> res = new ArrayList<>();
 
         //总的规模减去当天已经完成了的部分。如果减得负数或0，则下面的循环自然不会进行
-        scale -= statistics.completedQuizCardScale();
+        scale -= kTree.getNewlyReviewedQuizCards().stream().mapToInt(QuizCard::getScale).sum();
 
         //将当天做过的卡片排除在外
         List<QuizCard> quizCards = kTree.queryQuizCards();
-        DataUtils.difference(quizCards, statistics.completedQuizCards());
+        DataUtils.difference(quizCards, kTree.getNewlyReviewedQuizCards());
 
         //应用排序策略，每确定一个考察的卡片就缩减总的quizScale
         Stack<QuizCard> quizStack = strategy.apply(quizCards);
