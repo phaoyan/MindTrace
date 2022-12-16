@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.ToString;
 import pers.juumii.MindTrace.model.data.InstantData;
 import pers.juumii.MindTrace.model.data.Knowledge;
+import pers.juumii.MindTrace.model.data.LearningRecord;
 import pers.juumii.MindTrace.model.data.QuizCard;
+import pers.juumii.MindTrace.utils.SpringUtils;
 import pers.juumii.MindTrace.utils.algorithm.DataUtils;
 
 import java.time.Duration;
@@ -18,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @InstantData
 public class KNode {
 
+
     private Knowledge data;
     private List<KNode> subKNodes;
 
@@ -25,6 +28,7 @@ public class KNode {
         subKNodes = new ArrayList<>();
     }
 
+    @JsonIgnore
     private List<KNode> getKNodesBeneath(KNode root){
         List<KNode> res = new ArrayList<>(root.getSubKNodes());
         root.getSubKNodes().forEach(subXNode -> res.addAll(getKNodesBeneath(subXNode)));
@@ -37,7 +41,6 @@ public class KNode {
     }
 
 
-    @InstantData
     @JsonIgnore
     public List<KNode> getKNodesBeneath(){
         return getKNodesBeneath(this);
@@ -52,7 +55,6 @@ public class KNode {
         return res;
     }
 
-    @InstantData
     @JsonIgnore
     public List<QuizCard> getQuizCardsBeneath(){
         List<QuizCard> res = new ArrayList<>();
@@ -65,7 +67,6 @@ public class KNode {
         return DataUtils.destructureAll(getQuizCardsBeneath(), QuizCard::getId);
     }
 
-    @InstantData
     @JsonIgnore
     public List<QuizCard> getUnreviewedQuizCardsBeneath(){
         return DataUtils.getAllIf(getQuizCardsBeneath(), card->card.getQuizRecords().isEmpty());
@@ -99,22 +100,39 @@ public class KNode {
     }
 
     @InstantData
+    private Duration getLearningTimeSpent() {
+        Duration res = Duration.ZERO;
+        //拿到关联该knowledge的learning record数据
+        for(LearningRecord record: DataUtils.getAllIf(SpringUtils.getBean(KTree.class).getConfigs().getLearningRecords(), record->record.getConcernedKnowledgeIds().contains(getData().getId())))
+        //认为花费的时间为平均值
+            res = res.plus(record.getConcernedKnowledgeIds().isEmpty() ? Duration.ZERO : record.getDuration().dividedBy(record.getConcernedKnowledgeIds().size()));
+        return res;
+    }
+
+    @InstantData Duration getLearningTimeSpentBeneath(){
+        Duration res = getLearningTimeSpent();
+        for(KNode kNode: subKNodes)
+            res = res.plus(kNode.getLearningTimeSpentBeneath());
+        return res;
+    }
+
+    @InstantData
     public double getAverageQuizCardCompletion(){
         return getKNodesBeneath().stream().mapToDouble(kNode->kNode.getData().getAverageQuizCardCompletion()).sum() / getKNodesBeneath().size();
     }
 
     @InstantData
-    private List<QuizCard> getPerfectRecordQuizCards() {
+    public List<QuizCard> getPerfectRecordQuizCards() {
         return DataUtils.getAllIf(getQuizCardsBeneath(), card-> !card.getQuizRecords().isEmpty() && card.getQuizRecords().get(card.getQuizRecords().size()-1).getCompletion() >= 90);
     }
 
     @InstantData
-    private List<QuizCard> getPoorRecordQuizCards() {
-        return DataUtils.getAllIf(getQuizCardsBeneath(), card-> !card.getQuizRecords().isEmpty() && card.getQuizRecords().get(card.getQuizRecords().size()-1).getCompletion() <= 30);
+    public List<QuizCard> getPoorRecordQuizCards() {
+        return DataUtils.getAllIf(getQuizCardsBeneath(), card-> !card.getQuizRecords().isEmpty() && card.getCompletionLevel() == QuizCard.POOR);
     }
 
     @InstantData
-    private double getRate(){
+    public double getRate(){
         return getQuizCardsBeneath().stream().mapToDouble(QuizCard::getRate).sum() / getQuizCardsBeneath().size();
     }
 
@@ -124,10 +142,11 @@ public class KNode {
                 # Quiz
                  - *%d* quiz cards registered.
                  - *%d* minutes expected to review all quiz cards.
-                # Review
+                # Learn and Review
                  - *%d* quiz cards reviewed.
                  - *%d* quiz cards never reviewed.
                  - *%d* hours *%d* minutes spent on reviewing
+                 - *%d* hours *%d* minutes spent on learning
                 # Mastery
                  - *%.2f* is the average completion of quiz cards.
                  - *%d* quiz cards have perfect completion.
@@ -141,6 +160,7 @@ public class KNode {
                 getQuizCardsBeneath().size() - getUnreviewedQuizCardsBeneath().size(),
                 getUnreviewedQuizCardsBeneath().size(),
                 getReviewTimeSpent().toHoursPart(),getReviewTimeSpent().toMinutesPart(),
+                getLearningTimeSpentBeneath().toHoursPart(),getLearningTimeSpentBeneath().toMinutesPart(),
                 getAverageQuizCardCompletion(),
                 getPerfectRecordQuizCards().size(),
                 getPoorRecordQuizCards().size(),

@@ -27,4 +27,5 @@ export const addRecord = async ()=>{
 
 export const init = async ()=>{
     LearningTask.kTreeOptions = renderKTreeOptions()
+    console.log("learing task options", LearningTask.kTreeOptions)
 }

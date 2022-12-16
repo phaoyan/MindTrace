@@ -28,9 +28,9 @@ const selectDate = (val) => {
             <el-button @click="()=>MindTrace.pageSelected = 'GeneralInfo'">
                 <el-icon><Document /></el-icon>
             </el-button>
-            <el-button @click="()=>MindTrace.pageSelected = 'ChartsInfo'">
+            <!-- <el-button @click="()=>MindTrace.pageSelected = 'ChartsInfo'">
                 <el-icon><Histogram /></el-icon>
-            </el-button>
+            </el-button> -->
             <el-button @click="()=>MindTrace.pageSelected = 'CalendarInfo'">
                 <el-icon><Calendar /></el-icon>
             </el-button>

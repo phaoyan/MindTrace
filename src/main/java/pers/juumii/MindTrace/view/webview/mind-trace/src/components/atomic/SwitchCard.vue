@@ -1,7 +1,6 @@
 <script setup>
 import {ref} from "vue"
 const emits = defineEmits(['frontAction','backAction'])
-
 const state = ref(true)
 </script>
 

@@ -6,7 +6,8 @@ import { getKNode, getQuizCard, getProtoType, updateKNodeById } from "../general
 export const QuizTask = reactive({
     quizIsDue: false,
     quizCards: [],
-    finished: []
+    finished: [],
+    pageSelected:'QuizTask'
 })
 
 export const loadQuizIsDue = async () => {

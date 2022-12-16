@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 import pers.juumii.MindTrace.model.data.InstantData;
 import pers.juumii.MindTrace.model.data.LearningCard;
 import pers.juumii.MindTrace.model.data.LearningRecord;
@@ -18,10 +19,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @InstantData
+@Service
 public class KTreeConfigs {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

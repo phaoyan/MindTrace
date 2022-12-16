@@ -1,10 +1,10 @@
 <script setup>
-import {ref} from 'vue'
+import {ref, onMounted} from 'vue'
 import QuizTask from './QuizTask.vue'
 import LearningTask from './LearningTask.vue'
 import MindTrace from './MindTrace.vue'
 import QuizTrace from './QuizTrace.vue'
-import { HomePage } from '@/js/mirror/home/HomePage'
+import { HomePage, init } from '@/js/mirror/home/HomePage'
 import { general, useKTree, createKTree, removeKTree } from '@/js/mirror/general'
 import { updateSelectedIndexes } from '@/js/mirror/repository/RepositoryPage'
 import { AppVue } from '@/js/mirror/AppVue'
@@ -15,6 +15,7 @@ const emits = defineEmits(['changePage'])
 // 用于让el-select在选中某项后显示
 const value = ref(general.selectedKTree)
 
+onMounted(()=>init())
 </script>
 
 <template>
@@ -35,7 +36,7 @@ const value = ref(general.selectedKTree)
                 </el-select>
                 <el-button
                 @click="()=>{
-                    AppVue.pageSelected='repository'
+                    AppVue.pageSelected = 'repository'
                     updateSelectedIndexes([0])}">
                     <el-icon><Menu /></el-icon>
                 </el-button>

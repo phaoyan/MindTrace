@@ -6,6 +6,7 @@ import QuizCardPanel from './QuizCardPanel.vue'
 import SwitchButton from '../atomic/SwitchButton.vue'
 import { KnowledgeContent, shearSelectedKNode, shiftToSelectedKNode, copySelectedKNode, pasteToSelectedKNode } from '@/js/mirror/repository/KnowledgeContent'
 import { getSelectedKNode, updateSelectedKNode } from '@/js/mirror/repository/RepositoryPage'
+import { KnowledgeReview} from '@/js/mirror/repository/KnowledgeReview'
 </script>
 
 <template>
@@ -53,6 +54,18 @@ import { getSelectedKNode, updateSelectedKNode } from '@/js/mirror/repository/Re
                     </el-scrollbar>
                 </el-tab-pane>
                 <el-tab-pane label="Review" name="Review">
+                    <template #label>
+                        <el-dropdown 
+                        style="transform: translateY(100%);"
+                        @command="(pageSelected)=>KnowledgeReview.pageSelected = pageSelected">
+                            Review
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item command="Poor Completion">Poor Completion</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </template>
                     <el-scrollbar class="main-scroll" style="height:54vh">
                         <KnowledgeReviewVue/>
                     </el-scrollbar>

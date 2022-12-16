@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JsonUtilsTest {
 
-    @Test
-    void toJsonShallowly() {
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
-        KTree kTree = ctx.getBean(KTree.class);
-        System.out.println(JsonUtils.toJsonShallowly(kTree));
-    }
+//    @Test
+//    void toJsonShallowly() {
+//        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
+//        KTree kTree = ctx.getBean(KTree.class);
+//        System.out.println(JsonUtils.toJsonShallowly(kTree));
+//    }
 }

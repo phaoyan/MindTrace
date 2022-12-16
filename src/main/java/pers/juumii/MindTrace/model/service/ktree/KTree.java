@@ -23,6 +23,7 @@ import java.util.*;
 @InstantData
 public class KTree {
 
+    @InstantData
     @JsonIgnore
     private KTreeLoader loader;
     private KNode root;
@@ -46,51 +47,27 @@ public class KTree {
         loader.synchronize(this);
     }
 
-    public int size() {
-        return root.getSize();
-    }
-
-    public int quizCardSize(){
-        int res = 0;
-        for(KNode kNode: root.getKNodesBeneath())
-            res += kNode.getData().getQuizCards().size();
-        return res;
-    }
-
-    public int learningCardSize(){
-        int res = 0;
-        for(KNode kNode: root.getKNodesBeneath())
-            res += kNode.getData().getLearningCards().size();
-        return res;
-    }
-
-    public int quizRecordSize(){
-        int res = 0;
-        for(KNode kNode: root.getKNodesBeneath())
-            for(QuizCard card: kNode.getData().getQuizCards())
-                res += card.getQuizRecords().size();
-        return res;
-    }
-
-    public int learningRecordSize(){
-        return configs.getLearningRecords().size();
-    }
-
     public List<QuizCard> queryQuizCards(){
         List<QuizCard> res = new ArrayList<>();
         root.getKNodesBeneath().forEach(kNode -> res.addAll(kNode.getData().getQuizCards()));
         return res;
     }
 
-    @InstantData
     @JsonIgnore
     public KNode getKNode(long id){
         return id == 0 ? root: DataUtils.getIf(root.getKNodesBeneath(), kNode->kNode.getData().getId() == id);
     }
 
+
+
     @InstantData
     public List<LearningRecord> getLearningRecordsToday(){
         return DataUtils.getAllIf(configs.getLearningRecords(), record->record.getStartTime().isAfter(Constants.today));
+    }
+
+    @InstantData
+    public Duration getLearningTimeSpent(){
+        return Duration.ofSeconds(configs.getLearningRecords().stream().mapToLong(record->record.getDuration().toSeconds()).sum());
     }
 
     @InstantData
@@ -128,8 +105,10 @@ public class KTree {
     @InstantData
     public LocalDateTime getLastQuizTime(){
         List<List<QuizRecord>> recordGroups = DataUtils.destructureAll(root.getQuizCardsBeneath(), QuizCard::getQuizRecords);
+        if(recordGroups.isEmpty())
+            return Constants.timeAnchor;
         recordGroups.sort(Comparator.comparing(recordGroup -> recordGroup.isEmpty() ? Constants.timeAnchor : recordGroup.get(recordGroup.size()-1).getTime()));
-        return Objects.requireNonNull(DataUtils.getLast(recordGroups.get(recordGroups.size() - 1))).getTime();
+        return DataUtils.getLast(recordGroups.get(recordGroups.size() - 1)) == null ? Constants.timeAnchor : DataUtils.getLast(recordGroups.get(recordGroups.size() - 1)).getTime();
     }
 
     @InstantData
@@ -180,7 +159,7 @@ public class KTree {
                  - *%d*/*%d*/*%d* is the last quiz task time.
                 """
                 .formatted(
-                        getLearningTimeSpentToday().toHoursPart(), getLearningTimeSpentToday().toMinutesPart(), getLearningTimeSpentToday().toSecondsPart(),
+                        getLearningTimeSpent().toHoursPart(), getLearningTimeSpent().toMinutesPart(), getLearningTimeSpent().toSecondsPart(),
                         root.getSize(),
                         root.getQuizCardsBeneath().size(), Duration.ofMinutes(root.getTotalQuizScale()).toHoursPart(), Duration.ofMinutes(root.getTotalQuizScale()).toMinutesPart(),
                         root.getUnreviewedQuizCardsBeneath().size(), Duration.ofMinutes(root.getUnreviewedQuizScale()).toHoursPart(), Duration.ofMinutes(root.getUnreviewedQuizScale()).toMinutesPart(),

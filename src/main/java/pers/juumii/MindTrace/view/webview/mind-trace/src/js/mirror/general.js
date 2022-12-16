@@ -1,8 +1,11 @@
 import { reactive } from "vue"
 import constants from "../constants"
 import axios from "axios"
-import { QuizTrace } from "./home/QuizTrace"
-import { MindTrace } from "./home/MindTrace"
+import {init as initLearningTask} from "./home/LearningTask"
+import {init as initHomepage} from './home/HomePage'
+import {init as initQuizTask} from './home/QuizTask'
+import {init as initQuizTrace} from './home/QuizTrace'
+import {init as initMindTrace} from './home/MindTrace'
 
 export const general = reactive({
     kRoot:{},
@@ -18,12 +21,11 @@ export const init = async () => {
     await loadCurrentKTreeName()
     await loadSettings()
     await loadKTreeConfigs()
-    await getKTreeInfo('quizCardsSortedByEstablishment').then(kTree=>{
-        QuizTrace.quizCardTrace = kTree.quizCardsSortedByEstablishment
-        MindTrace.overviewMarkdown = kTree.overviewMarkdown
-        MindTrace.learningRecordsGroupedByDate = kTree.learningRecordsGroupedByDate
-        MindTrace.learningOverviews = kTree.learningOverviews
-    })
+    await initQuizTrace()
+    await initMindTrace()
+    await initHomepage()
+    await initQuizTask()
+    await initLearningTask()
 }
 
 export const getKTreeInfo = async ()=>{
@@ -82,6 +84,12 @@ export const getQuizCard = (id, kNode=general.kRoot)=>{
     for(let i in kNode.subKNodes)
         if(getQuizCard(id, kNode.subKNodes[i]) != undefined)
             return getQuizCard(id, kNode.subKNodes[i])
+}
+
+export const getQuizCardsById = (ids)=>{
+    let res = []
+    ids.forEach(id=>res.push(getQuizCard(id)))
+    return res
 }
 
 export const getLearningCard = (id, kNode=general.kRoot)=>{

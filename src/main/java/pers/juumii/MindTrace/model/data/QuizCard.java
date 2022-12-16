@@ -20,6 +20,8 @@ import java.util.List;
 @InstantData
 public class QuizCard implements Persistent{
 
+    public static final int NO_RECORD = -1, POOR = 0, GOOD = 1, PERFECT = 2;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -32,6 +34,17 @@ public class QuizCard implements Persistent{
 
     public LocalDateTime getEstablishTime(){
         return establishTime == null ? LocalDateTime.now() : establishTime;
+    }
+
+    // -1 for no record, 0 for poor, 1 for good, 2 for perfect
+    @InstantData
+    public int getCompletionLevel() {
+        if(quizRecords.isEmpty())
+            return NO_RECORD;
+        QuizRecord lastRecord = quizRecords.get(quizRecords.size() - 1);
+        return  lastRecord.getCompletion() <= 30 ? POOR :
+                lastRecord.getCompletion() < 90 ? GOOD :
+                PERFECT;
     }
 
     public static QuizCard protoType() {
@@ -54,5 +67,4 @@ public class QuizCard implements Persistent{
         record.setCompletion(completion);
         return quizCard;
     }
-
 }

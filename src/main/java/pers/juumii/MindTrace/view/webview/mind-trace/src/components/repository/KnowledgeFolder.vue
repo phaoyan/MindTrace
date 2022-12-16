@@ -1,6 +1,6 @@
 <script setup>
 import {KnowledgeFolder, addKNode, removeKNode , init} from "@/js/mirror/repository/KnowledgeFolder"
-import { general, updateSelectedKTreeName, saveData } from "@/js/mirror/general"
+import { general, updateSelectedKTreeName, saveData, init as initGeneral } from "@/js/mirror/general"
 import { RepositoryPage, updateSelectedIndexes } from "@/js/mirror/repository/RepositoryPage"
 import { onMounted, watch } from "vue"
 import { AppVue } from "@/js/mirror/AppVue"
@@ -36,7 +36,7 @@ watch(general, ()=>{init()})
                 <el-icon><FolderChecked /></el-icon>
             </el-button>
             <el-button
-            @click="()=>{AppVue.pageSelected = 'home'}">
+            @click="async()=>{await initGeneral() ; AppVue.pageSelected = 'home'}">
             <el-icon><HomeFilled /></el-icon>
           </el-button>
         </div>

@@ -1,7 +1,10 @@
 <script setup>
 import RepositoryPage from './components/repository/RepositoryPage.vue'
 import HomePage from '@/components/home/HomePage.vue'
-import { AppVue } from './js/mirror/AppVue';
+import { AppVue, init } from './js/mirror/AppVue'
+import { onMounted } from 'vue'
+
+onMounted(()=>init())
 
 </script>
 

@@ -33,9 +33,6 @@ const onCompletionSelected = async (selection, cardCopy)=>{
 
 onMounted(()=>{init()})
 
-// Settings / QuizTask
-const pageSelected = ref('QuizTask')
-
 </script>
 
 <template>
@@ -54,15 +51,15 @@ const pageSelected = ref('QuizTask')
             </div>
         </SubpageHeader>
         <div class="options-row space-evenly" style="margin: auto 42vw">
-            <el-button @click="()=>pageSelected = 'Settings'">
+            <el-button @click="()=>QuizTask.pageSelected = 'Settings'">
                 <el-icon><Setting /></el-icon>
             </el-button>
-            <el-button @click="()=>{loadQuiz(); pageSelected = 'QuizTask'}">
+            <el-button @click="()=>{loadQuiz(); QuizTask.pageSelected = 'QuizTask'}">
                 <el-icon><EditPen /></el-icon>
             </el-button>
         </div>
         <el-scrollbar style="height:70vh">
-            <div class="settings" v-if="pageSelected == 'Settings'">
+            <div class="settings" v-if="QuizTask.pageSelected == 'Settings'">
                 <br/>
                 <el-form v-model="general.kTreeConfigs" :inline="true" style="width:80vw; margin: 0 auto">
                     <el-form-item label="Period(days)">
@@ -151,7 +148,7 @@ const pageSelected = ref('QuizTask')
                     </el-form>
                 </el-form>
             </div>
-            <div class="quizzes" v-if="pageSelected == 'QuizTask'">
+            <div class="quizzes" v-if="QuizTask.pageSelected == 'QuizTask'">
                 <div class="quiz-task-wrapper" v-if="(QuizTask.quizIsDue  && QuizTask.quizCards.length != 0)">
                     <QuizCard 
                     v-for="card in QuizTask.quizCards" :key="card" 

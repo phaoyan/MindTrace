@@ -1,6 +1,6 @@
 import { reactive } from "vue"
 import { getSelectedKNode, updateSelectedKNode } from "./RepositoryPage"
-import { getKNode, updateKNode, getQuizCard } from "../general"
+import { getKNode, updateKNode, getQuizCard, general } from "../general"
 import constants from "@/js/constants"
 
 export const KnowledgeContent = reactive({
@@ -28,7 +28,7 @@ export const shiftToSelectedKNode = async ()=>{
     superKNode.subKNodes.splice(superKNode.subKNodes.indexOf(KnowledgeContent.toBeShifted),1)
     console.log("superKNode",superKNode)
     //¸üÐÂ
-    await updateKNode(KnowledgeContent.kRoot)
+    await updateKNode(general.kRoot)
 }
 export const copySelectedKNode = ()=>{
     //Éî¿½±´

@@ -2,7 +2,8 @@
 
 import { app, protocol, BrowserWindow, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import request from './js/request'
+import axios from 'axios'
+import constants from './js/constants'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -11,7 +12,7 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 async function createWindow() {
-  // Menu.setApplicationMenu(null)
+  Menu.setApplicationMenu(null)
 
   // Create the browser window.
   const win = new BrowserWindow({
@@ -27,9 +28,9 @@ async function createWindow() {
     }
   })
 
-  win.on('close', ()=>{
+  win.on('close',async ()=>{
     //后端同步退出
-    request.exit()
+    await axios.get(constants.backHost + "exit")
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

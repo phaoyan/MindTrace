@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import SwitchButton from './SwitchButton.vue'
-import request from '@/js/request'
+import { uploadImage } from '@/js/mirror/atomic/EditableContent'
 
 const props = defineProps({
     text: {
@@ -47,7 +47,7 @@ const markdownEditMode = ref(props.edit)
                     @change="()=>{emits('change', text)}"
                     left-toolbar="undo redo | image"
                     :disabled-menus="[]"
-                    @upload-image="(event, insertImage, files)=>request.uploadImage(event, insertImage, files)"/>
+                    @upload-image="(event, insertImage, files)=>uploadImage(event, insertImage, files)"/>
                     <v-md-preview v-if="markdownEditMode == false" :text="text"/>
                 </el-scrollbar>
             </div>

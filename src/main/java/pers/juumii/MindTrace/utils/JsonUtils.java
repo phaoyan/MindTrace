@@ -1,6 +1,7 @@
 package pers.juumii.MindTrace.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -67,7 +68,7 @@ public class JsonUtils {
             return readJson(toJson(origin), JsonNode.class);
 
         ObjectNode res = new ObjectNode(JsonNodeFactory.instance);
-        List<Method> concernedGetters = DataUtils.getAllIf(ReflectionUtils.getters(origin.getClass()), method -> !method.isAnnotationPresent(InstantData.class));
+        List<Method> concernedGetters = DataUtils.getAllIf(ReflectionUtils.getters(origin.getClass()), method -> !method.isAnnotationPresent(InstantData.class) && !method.isAnnotationPresent(JsonIgnore.class));
         for (Method getter: concernedGetters)
             try {
                 res.set(getterNameToFieldName(getter.getName()), toJsonNodeShallowly(getter.invoke(origin)));
